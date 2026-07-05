@@ -1,0 +1,12 @@
+{
+  "Editor": {
+    "title": "CVitae Tailor",
+    "ai_tailor": "AI Tailor",
+    "render_pdf": "Render PDF",
+    "rendering": "Rendering...",
+    "variant_config": "Variant Configuration",
+    "live_preview": "Live Preview",
+    "click_to_generate": "Click \"Render PDF\" to generate preview",
+    "download_pdf": "Download PDF"
+  }
+}
