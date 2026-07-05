@@ -1,0 +1,3 @@
+[submodule "core-engine"]
+	path = core-engine
+	url = git@hjisaac.github.com:hjisaac/cvitae.git

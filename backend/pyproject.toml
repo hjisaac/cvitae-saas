@@ -1,0 +1,13 @@
+[project]
+name = "cvitae-saas-backend"
+version = "0.1.0"
+description = "FastAPI wrapper for CVitae engine"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "python-multipart",
+    "cvitae"
+]
+
+[tool.uv.sources]
+cvitae = { path = "../core-engine" }
