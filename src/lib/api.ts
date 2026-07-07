@@ -24,3 +24,28 @@ export const generatePDF = async (yamlContent: string): Promise<Blob> => {
   });
   return response.data;
 };
+
+export const fetchProfiles = async (): Promise<string[]> => {
+  const response = await apiClient.get("/profiles");
+  return response.data;
+};
+
+export const fetchFileContent = async (profile: string, fileType: string): Promise<{ content: string, filepath: string }> => {
+  const response = await apiClient.get(`/file-content?profile=${profile}&file_type=${fileType}`);
+  return response.data;
+};
+
+export const saveFileContent = async (profile: string, fileType: string, content: string): Promise<any> => {
+  const response = await apiClient.post("/file-content", { profile, file_type: fileType, content });
+  return response.data;
+};
+
+export const fetchSchema = async (type: "selector" | "variant"): Promise<any> => {
+  const response = await apiClient.get(`/schema/${type}`);
+  return response.data;
+};
+
+export const resolveSyncTex = async (page: number, x: number, y: number): Promise<{ tex_file: string, tex_line: number, yaml_path: string | null }> => {
+  const response = await apiClient.post("/synctex-resolve", { page, x, y });
+  return response.data;
+};

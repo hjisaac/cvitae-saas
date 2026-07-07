@@ -10,14 +10,18 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
+    "@rjsf/core": "^6.6.2",
+    "@rjsf/validator-ajv8": "^6.6.2",
     "@tanstack/react-query": "^5.50.0",
     "axios": "^1.7.0",
     "lucide-react": "^0.453.0",
-    "next": "15.0.0",
+    "next": "15.1.7",
     "next-intl": "^3.23.5",
     "react": "19.0.0-rc-65a56d0e-20241020",
     "react-dom": "19.0.0-rc-65a56d0e-20241020",
-    "react-resizable-panels": "^2.1.4"
+    "react-pdf": "^10.4.1",
+    "react-resizable-panels": "^2.1.4",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",

@@ -6,6 +6,10 @@ import { notFound } from "next/navigation";
 import { routing } from "../../i18n/routing";
 import Providers from "../../lib/Providers";
 
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
 export const metadata: Metadata = {
   title: "CVitae Tailor",
   description: "AI-Powered LaTeX CV Generator",
