@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const CORE_ENGINE_URL = process.env.CORE_ENGINE_URL || "http://127.0.0.1:8080/generate-pdf";
+const CORE_ENGINE_URL = process.env.CORE_ENGINE_URL || "http://127.0.0.1:8000/generate-pdf";
 
 export async function POST(req: NextRequest) {
   try {
-    const data = await req.json();
+    const { yamlContent } = await req.json();
 
     const response = await fetch(CORE_ENGINE_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ cv_data: data }),
+      body: JSON.stringify({ yaml_content: yamlContent }),
     });
 
     if (!response.ok) {

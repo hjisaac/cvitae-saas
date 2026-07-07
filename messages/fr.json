@@ -1,12 +1,10 @@
 {
-  "Editor": {
-    "title": "CVitae Sur-Mesure",
-    "ai_tailor": "IA Sur-Mesure",
-    "render_pdf": "Générer PDF",
-    "rendering": "Génération...",
-    "variant_config": "Configuration du Variant",
-    "live_preview": "Aperçu en Direct",
-    "click_to_generate": "Cliquez sur \"Générer PDF\" pour voir l'aperçu",
-    "download_pdf": "Télécharger le PDF"
-  }
+  "CVitae Tailor": "CVitae Sur-Mesure",
+  "AI Tailor": "IA Sur-Mesure",
+  "Render PDF": "Générer PDF",
+  "Rendering": "Génération...",
+  "Variant Configuration": "Configuration du Variant",
+  "Live Preview": "Aperçu en Direct",
+  "Click \"Render PDF\" to generate preview": "Cliquez sur \"Générer PDF\" pour voir l'aperçu",
+  "Download PDF": "Télécharger le PDF"
 }

@@ -3,37 +3,25 @@
 import { useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import Editor from "@monaco-editor/react";
-import { Sparkles, FileText, Download, Play } from "lucide-react";
-import dummyCVData from "./dummy-cv.json";
-
+import { Sparkles, FileText, Download, Play, Loader2 } from "lucide-react";
+import { dummyCVYaml } from "./dummy-cv-yaml";
 import { useTranslations } from "next-intl";
+import { useMutation } from "@tanstack/react-query";
+import { generatePDF } from "../../lib/api";
 
 export default function Home() {
-  const t = useTranslations("Editor");
-  const [yamlContent, setYamlContent] = useState(JSON.stringify(dummyCVData, null, 2));
-  const [loading, setLoading] = useState(false);
+  const t = useTranslations();
+  const [yamlContent, setYamlContent] = useState(dummyCVYaml);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
 
-  const generatePDF = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: yamlContent,
-      });
-
-      if (!response.ok) throw new Error("Failed to generate PDF");
-
-      const blob = await response.blob();
-      setPdfBlob(blob);
-    } catch (err) {
-      console.error(err);
-      alert("Error generating PDF");
-    } finally {
-      setLoading(false);
+  const mutation = useMutation({
+    mutationFn: (content: string) => generatePDF(content),
+    onSuccess: (blob) => setPdfBlob(blob),
+    onError: (error) => {
+      console.error(error);
+      alert("Error generating PDF. Check console.");
     }
-  };
+  });
 
   return (
     <div className="h-screen w-full flex flex-col bg-[var(--background)] text-[var(--foreground)] font-sans overflow-hidden">
@@ -41,22 +29,22 @@ export default function Home() {
       <header className="h-16 border-b border-[var(--border)] flex items-center justify-between px-6 bg-white/50 backdrop-blur-md z-10">
         <div className="flex items-center gap-2">
           <FileText className="w-6 h-6 text-[var(--accent)]" />
-          <h1 className="font-semibold text-lg tracking-tight">{t('title')}</h1>
+          <h1 className="font-semibold text-lg tracking-tight">{t('CVitae Tailor')}</h1>
         </div>
         <div className="flex gap-4">
           <button 
             className="glass-panel px-4 py-2 text-sm font-medium hover:bg-white/80 transition-colors flex items-center gap-2"
           >
             <Sparkles className="w-4 h-4 text-[var(--accent)]" />
-            {t('ai_tailor')}
+            {t('AI Tailor')}
           </button>
           <button 
-            onClick={generatePDF}
-            disabled={loading}
+            onClick={() => mutation.mutate(yamlContent)}
+            disabled={mutation.isPending}
             className="bg-[var(--accent)] text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-sm disabled:opacity-50"
           >
-            <Play className="w-4 h-4" />
-            {loading ? t('rendering') : t('render_pdf')}
+            {mutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+            {mutation.isPending ? t('Rendering') : t('Render PDF')}
           </button>
         </div>
       </header>
@@ -68,12 +56,12 @@ export default function Home() {
           {/* Left Pane: Code Editor */}
           <Panel defaultSize={50} minSize={30} className="flex flex-col h-full bg-[#fcfcfc]">
             <div className="px-4 py-2 border-b border-[var(--border)] bg-[#f5f4f1] text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              {t('variant_config')}
+              {t('Variant Configuration')}
             </div>
             <div className="flex-1">
               <Editor
                 height="100%"
-                defaultLanguage="json"
+                defaultLanguage="yaml"
                 value={yamlContent}
                 onChange={(val) => setYamlContent(val || "")}
                 theme="light"
@@ -96,12 +84,12 @@ export default function Home() {
           {/* Right Pane: Live PDF Preview */}
           <Panel defaultSize={50} minSize={30} className="flex flex-col h-full bg-gray-50/50 relative">
             <div className="px-4 py-2 border-b border-[var(--border)] bg-[#f5f4f1] flex justify-between items-center">
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('live_preview')}</span>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('Live Preview')}</span>
               {pdfBlob && (
                 <button 
                   onClick={() => window.open(URL.createObjectURL(pdfBlob))}
                   className="text-gray-500 hover:text-[var(--accent)] transition-colors"
-                  title={t('download_pdf')}
+                  title={t('Download PDF')}
                 >
                   <Download className="w-4 h-4" />
                 </button>
@@ -117,7 +105,7 @@ export default function Home() {
               ) : (
                 <div className="flex flex-col items-center justify-center text-gray-400 gap-3 h-full">
                   <FileText className="w-12 h-12 opacity-50" />
-                  <p className="text-sm font-medium">{t('click_to_generate')}</p>
+                  <p className="text-sm font-medium">{t('Click "Render PDF" to generate preview')}</p>
                 </div>
               )}
             </div>

@@ -1,12 +1,21 @@
 .PHONY: dev-frontend dev-backend update-engine install
 
+# Path to the compatible node binary (v22 from nvm)
+NODE := $(HOME)/.nvm/versions/node/v22.19.0/bin/node
+PNPM := $(NODE) /usr/local/lib/node_modules/pnpm/bin/pnpm.cjs
+NEXT := $(NODE) node_modules/.pnpm/next@15.0.0_react-dom@19.0.0-rc-65a56d0e-20241020_react@19.0.0-rc-65a56d0e-20241020__react@19.0.0-rc-65a56d0e-20241020/node_modules/next/dist/bin/next
+
 # Install frontend dependencies
 install:
-	pnpm install
+	$(PNPM) install --strict-peer-dependencies=false
 
 # Run the Next.js frontend
 dev-frontend:
-	pnpm run dev
+	$(NEXT) dev
+
+# Build for production
+build:
+	$(NEXT) build
 
 # Run the FastAPI backend
 dev-backend:
