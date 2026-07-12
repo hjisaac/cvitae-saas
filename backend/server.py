@@ -28,8 +28,8 @@ class GenerateRequest(BaseModel):
 @app.post("/generate-pdf")
 async def generate_pdf(req: GenerateRequest):
     try:
-        # Parse the YAML content into a dictionary
-        cv_data = yaml.safe_load(req.yaml_content)
+        from backend.loader import Loader
+        cv_data = yaml.load(req.yaml_content, Loader=Loader)
         
         # 1. Escape LaTeX characters
         escaped = escape_for_latex(cv_data)
@@ -70,6 +70,8 @@ async def generate_pdf(req: GenerateRequest):
         return Response(content=pdf_bytes, media_type="application/pdf")
         
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/health")
