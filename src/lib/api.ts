@@ -51,7 +51,11 @@ export const fetchSchema = async (type: "selector" | "variant"): Promise<any> =>
   return response.data;
 };
 
-export const resolveSyncTex = async (page: number, x: number, y: number): Promise<{ tex_file: string, tex_line: number, yaml_path: string | null }> => {
+export const resolveSyncTex = async (
+  page: number, 
+  x: number, 
+  y: number
+): Promise<{ tex_file?: string; tex_line: number; tex_text?: string; yaml_path?: string | null }> => {
   const response = await apiClient.post("/synctex-resolve", { page, x, y });
   return response.data;
 };

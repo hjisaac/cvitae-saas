@@ -90,3 +90,33 @@ body {
   margin-top: 0;
   color: var(--primary);
 }
+
+/* Custom Form Styling & Micro-animations */
+.rjsf-beige-form {
+  scroll-behavior: smooth;
+}
+
+.rjsf-beige-form input, 
+.rjsf-beige-form textarea, 
+.rjsf-beige-form select {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Custom Scrollbar for Form and PDF Panes */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}

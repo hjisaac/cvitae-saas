@@ -21,6 +21,10 @@ import {
   extractPageLineCount,
   projectPdfClickToYamlLine,
 } from "../../lib/synctex-projection";
+import { 
+  customFormTemplates, 
+  customFormWidgets 
+} from "../../components/FormCustomTemplates";
 
 // Dynamically load PDFViewer with SSR disabled since it uses canvas/window APIs
 const PDFViewer = dynamic(() => import("./PDFViewer"), { ssr: false });
@@ -436,6 +440,8 @@ export default function Home() {
                         schema={formSchema}
                         validator={validator}
                         formData={formData}
+                        templates={customFormTemplates}
+                        widgets={customFormWidgets}
                         onChange={handleFormChange}
                         children={true} // Removes standard submit button
                       />
