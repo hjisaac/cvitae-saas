@@ -1,0 +1,63 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Next.js: Frontend (Chrome Client)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${workspaceFolder}/*"
+      }
+    },
+    {
+      "name": "Next.js: Frontend (Edge Client)",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "Next.js: Node Server-Side",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/next",
+      "runtimeArgs": ["dev"],
+      "port": 9229,
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "FastAPI: Python Backend",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "server:app",
+        "--reload",
+        "--port",
+        "8000"
+      ],
+      "cwd": "${workspaceFolder}/backend",
+      "jinja": true,
+      "justMyCode": true
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Next.js: Full Stack (Server + Chrome Client)",
+      "configurations": [
+        "Next.js: Node Server-Side",
+        "Next.js: Frontend (Chrome Client)"
+      ]
+    },
+    {
+      "name": "Complete Full Stack (Next.js Frontend + FastAPI Backend)",
+      "configurations": [
+        "Next.js: Node Server-Side",
+        "Next.js: Frontend (Chrome Client)",
+        "FastAPI: Python Backend"
+      ]
+    }
+  ]
+}

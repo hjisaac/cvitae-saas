@@ -1,0 +1,39 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dev:frontend",
+      "type": "shell",
+      "command": "make dev-frontend",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "nextjs",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Starting...",
+          "endsPattern": "Ready in"
+        }
+      }
+    },
+    {
+      "label": "dev:backend",
+      "type": "shell",
+      "command": "make dev-backend",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "fastapi",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Starting",
+          "endsPattern": "Application startup complete"
+        }
+      }
+    }
+  ]
+}
