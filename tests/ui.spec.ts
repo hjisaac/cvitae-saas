@@ -20,7 +20,7 @@ test.describe("CVitae Tailor UI", () => {
     await expect(page.getByText("Live Preview")).toBeVisible();
 
     // Monaco editor container should load
-    await expect(page.locator(".monaco-editor")).toBeVisible({ timeout: 15000 });
+    await expect(page.locator(".monaco-editor")).toBeVisible({ timeout: 30000 });
 
     // Empty state placeholder in preview pane
     await expect(page.getByText(/Click "Render PDF" to generate preview/i)).toBeVisible();

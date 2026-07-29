@@ -28,9 +28,31 @@ class GenerateRequest(BaseModel):
 @app.post("/generate-pdf")
 async def generate_pdf(req: GenerateRequest):
     try:
-        from backend.loader import Loader
-        cv_data = yaml.load(req.yaml_content, Loader=Loader)
-        
+        from backend.loader import Loader, load_yaml_with_inheritance
+        from backend.models import CVConfig, ContentData
+        from backend.resolution import resolve_cv
+
+        cv_data = yaml.load(req.yaml_content, Loader=Loader) or {}
+        if not isinstance(cv_data, dict):
+            cv_data = {}
+
+        contents_dir = Path(__file__).parent.parent / "core-engine" / "contents"
+        general_path = contents_dir / "cv_variants" / "general.yaml"
+        base_variant = load_yaml_with_inheritance(general_path) if general_path.exists() else {}
+
+        if "sections" in cv_data:
+            config = CVConfig(**cv_data)
+            source = ContentData(**base_variant)
+            cv_data = resolve_cv(config, source)
+        elif "name" not in cv_data or "sections" not in cv_data:
+            merged_variant = base_variant.copy()
+            merged_variant.update(cv_data)
+            default_selector_path = contents_dir / "cv_selectors" / "general.yaml"
+            selector_data = load_yaml_with_inheritance(default_selector_path) if default_selector_path.exists() else {"sections": []}
+            config = CVConfig(**selector_data)
+            source = ContentData(**merged_variant)
+            cv_data = resolve_cv(config, source)
+
         # 1. Escape LaTeX characters
         escaped = escape_for_latex(cv_data)
 

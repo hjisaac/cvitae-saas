@@ -3,11 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import Editor from "@monaco-editor/react";
-import { Sparkles, FileText, Download, Play, Loader2, Menu, Eye, Code, Sliders as FormIcon, Save } from "lucide-react";
+import { Sparkles, FileText, Download, Play, Loader2, Menu, Eye, Code, Sliders as FormIcon, Save, AlertCircle, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
-import { parseDocument, stringify, parse } from "yaml";
+import { parseYaml, stringifyYaml, parseYamlDocument } from "../../lib/yaml";
+import * as Sentry from "@sentry/nextjs";
 
 import { 
   generatePDF, 
@@ -25,6 +26,12 @@ const PDFViewer = dynamic(() => import("./PDFViewer"), { ssr: false });
 const RJSFForm = dynamic(() => import("@rjsf/core").then(mod => mod.default), { ssr: false });
 import validator from "@rjsf/validator-ajv8";
 
+const captureError = (err: any) => {
+  if (typeof window !== "undefined" && (window as any).Sentry) {
+    (window as any).Sentry.captureException(err);
+  }
+};
+
 export default function Home() {
   const t = useTranslations();
   
@@ -39,6 +46,7 @@ export default function Home() {
   const [filePath, setFilePath] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"code" | "form">("code");
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
   // Dynamic Form schema
   const [formSchema, setFormSchema] = useState<any>(null);
@@ -56,7 +64,11 @@ export default function Home() {
           setSelectedProfile(p[0]);
         }
       })
-      .catch(err => console.error("Error loading profiles:", err));
+      .catch(err => {
+        console.error("Error loading profiles:", err);
+        captureError(err);
+        setErrorMsg("The server encountered a problem loading profiles. Please try again later.");
+      });
   }, []);
 
   // Fetch active file content when profile or file type changes
@@ -70,14 +82,18 @@ export default function Home() {
         
         // Sync to Form Data
         try {
-          const parsed = parse(data.content) || {};
+          const parsed = parseYaml(data.content) || {};
           setFormData(parsed);
         } catch (e) {
           // YAML might be empty or invalid initially
           setFormData({});
         }
       })
-      .catch(err => console.error("Error loading file content:", err));
+      .catch(err => {
+        console.error("Error loading file content:", err);
+        captureError(err);
+        setErrorMsg("The server encountered a problem loading file content. Please try again later.");
+      });
   }, [selectedProfile, activeFileType]);
 
   // Load JSON schema based on active file type (selector or variant)
@@ -88,7 +104,11 @@ export default function Home() {
         // Strip out YAML custom tags ($ref, etc.) if they confuse RJSF
         setFormSchema(schema);
       })
-      .catch(err => console.error("Error loading schema:", err));
+      .catch(err => {
+        console.error("Error loading schema:", err);
+        captureError(err);
+        setErrorMsg("The server encountered a problem loading form schema. Please try again later.");
+      });
   }, [activeFileType]);
 
   // Track Monaco Editor load
@@ -102,7 +122,7 @@ export default function Home() {
     setYamlContent(val);
     
     try {
-      const parsed = parse(val);
+      const parsed = parseYaml(val);
       if (parsed && typeof parsed === "object") {
         setFormData(parsed);
       }
@@ -116,7 +136,7 @@ export default function Home() {
     const newFormData = event.formData;
     setFormData(newFormData);
     try {
-      const newYaml = stringify(newFormData);
+      const newYaml = stringifyYaml(newFormData);
       setYamlContent(newYaml);
     } catch (e) {
       console.error("Error stringifying form data:", e);
@@ -127,20 +147,27 @@ export default function Home() {
   const saveMutation = useMutation({
     mutationFn: () => saveFileContent(selectedProfile, activeFileType, yamlContent),
     onSuccess: (data) => {
+      setErrorMsg(null);
       alert(`Saved successfully to ${data.filepath}`);
     },
     onError: (err: any) => {
-      alert(`Error saving file: ${err.message}`);
+      console.error("Save failed:", err);
+      captureError(err);
+      setErrorMsg("The server encountered a problem saving your changes. Please try again later.");
     }
   });
 
   // Render PDF
   const renderMutation = useMutation({
     mutationFn: (content: string) => generatePDF(content),
-    onSuccess: (blob) => setPdfBlob(blob),
+    onSuccess: (blob) => {
+      setErrorMsg(null);
+      setPdfBlob(blob);
+    },
     onError: (error: any) => {
-      console.error(error);
-      alert("Error generating PDF. Check console logs.");
+      console.error("Render failed:", error);
+      captureError(error);
+      setErrorMsg("The server encountered a problem compiling your PDF. Please try again later.");
     }
   });
 
@@ -154,7 +181,7 @@ export default function Home() {
       if (activeTab === "code") {
         // Code view highlight
         if (editorRef.current) {
-          const doc = parseDocument(yamlContent);
+          const doc = parseYamlDocument(yamlContent);
           const pathKeys = path.split(".");
           const node = doc.getIn(pathKeys, true);
           
@@ -422,6 +449,24 @@ export default function Home() {
           </PanelGroup>
         </main>
       </div>
+
+      {/* Error Toast */}
+      {errorMsg && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-red-50/95 border border-red-200 text-red-955 px-4 py-3 rounded-lg shadow-xl backdrop-blur-md transition-all duration-300 max-w-sm">
+          <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[11px] font-bold text-red-800 uppercase tracking-wider">System Alert</span>
+            <span className="text-xs text-red-900 leading-normal font-medium">{errorMsg}</span>
+          </div>
+          <button 
+            onClick={() => setErrorMsg(null)}
+            className="p-1 hover:bg-red-100 rounded text-red-500 hover:text-red-700 transition-colors shrink-0 ml-3"
+            title="Dismiss Message"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Loader2, ZoomIn, ZoomOut } from "lucide-react";
+import "react-pdf/dist/Page/TextLayer.css";
+import "react-pdf/dist/Page/AnnotationLayer.css";
 
 interface PDFViewerProps {
   pdfBlob: Blob;
@@ -11,20 +13,30 @@ interface PDFViewerProps {
 export default function PDFViewer({ pdfBlob, onPdfClick }: PDFViewerProps) {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [scale, setScale] = useState<number>(1.1);
-  const [reactPdf, setReactPdf] = useState<any>(null);
+  const [pdfComponents, setPdfComponents] = useState<{ Document: any; Page: any } | null>(null);
 
-  // Dynamically load react-pdf on the client side only
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    // Polyfill Promise.withResolvers if missing in current environment
+    if (typeof (Promise as any).withResolvers === "undefined") {
+      (Promise as any).withResolvers = function () {
+        let resolve: any, reject: any;
+        const promise = new Promise((res, rej) => {
+          resolve = res;
+          reject = rej;
+        });
+        return { promise, resolve, reject };
+      };
+    }
+
     import("react-pdf")
       .then((mod) => {
-        // Load the worker from unpkg matching the installed pdfjs-dist version
-        mod.pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${mod.pdfjs.version}/build/pdf.worker.min.mjs`;
-        setReactPdf(mod);
+        mod.pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${mod.pdfjs.version}/build/pdf.worker.min.mjs`;
+        setPdfComponents({ Document: mod.Document, Page: mod.Page });
       })
       .catch((err) => {
-        console.error("Failed to load react-pdf dynamically:", err);
+        console.error("Failed to load react-pdf:", err);
       });
   }, []);
 
@@ -39,7 +51,7 @@ export default function PDFViewer({ pdfBlob, onPdfClick }: PDFViewerProps) {
     onPdfClick(pageNumber, pdfX, pdfY);
   };
 
-  if (!reactPdf) {
+  if (!pdfComponents) {
     return (
       <div className="flex items-center justify-center h-full w-full bg-[#e8e6e1] text-gray-500 gap-2 shadow-inner">
         <Loader2 className="w-5 h-5 animate-spin" />
@@ -48,7 +60,7 @@ export default function PDFViewer({ pdfBlob, onPdfClick }: PDFViewerProps) {
     );
   }
 
-  const { Document, Page } = reactPdf;
+  const { Document, Page } = pdfComponents;
 
   return (
     <div className="flex flex-col h-full w-full">
@@ -75,7 +87,11 @@ export default function PDFViewer({ pdfBlob, onPdfClick }: PDFViewerProps) {
       <div className="flex-1 p-4 bg-[#e8e6e1] overflow-y-auto flex flex-col items-center gap-4 shadow-inner">
         <Document
           file={pdfBlob}
-          onLoadSuccess={({ numPages }: { numPages: number }) => setNumPages(numPages)}
+          onLoadSuccess={({ numPages: nextNumPages }: { numPages: number }) => {
+            if (nextNumPages !== numPages) {
+              setNumPages(nextNumPages);
+            }
+          }}
           loading={
             <div className="flex items-center gap-2 text-gray-500">
               <Loader2 className="w-5 h-5 animate-spin" />
