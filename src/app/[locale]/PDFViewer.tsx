@@ -7,13 +7,14 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 
 interface PDFViewerProps {
   pdfBlob: Blob;
-  onPdfClick: (page: number, x: number, y: number) => void;
+  onPdfClick: (page: number, x: number, y: number, yFraction?: number, pdfDocument?: any) => void;
 }
 
 export default function PDFViewer({ pdfBlob, onPdfClick }: PDFViewerProps) {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [scale, setScale] = useState<number>(1.1);
   const [pdfComponents, setPdfComponents] = useState<{ Document: any; Page: any } | null>(null);
+  const [pdfDocInstance, setPdfDocInstance] = useState<any>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -47,8 +48,9 @@ export default function PDFViewer({ pdfBlob, onPdfClick }: PDFViewerProps) {
     
     const pdfX = clickX / scale;
     const pdfY = clickY / scale;
+    const yFraction = rect.height > 0 ? clickY / rect.height : 0.5;
 
-    onPdfClick(pageNumber, pdfX, pdfY);
+    onPdfClick(pageNumber, pdfX, pdfY, yFraction, pdfDocInstance);
   };
 
   if (!pdfComponents) {
@@ -87,9 +89,10 @@ export default function PDFViewer({ pdfBlob, onPdfClick }: PDFViewerProps) {
       <div className="flex-1 p-4 bg-[#e8e6e1] overflow-y-auto flex flex-col items-center gap-4 shadow-inner">
         <Document
           file={pdfBlob}
-          onLoadSuccess={({ numPages: nextNumPages }: { numPages: number }) => {
-            if (nextNumPages !== numPages) {
-              setNumPages(nextNumPages);
+          onLoadSuccess={(pdfDoc: any) => {
+            setPdfDocInstance(pdfDoc);
+            if (pdfDoc.numPages !== numPages) {
+              setNumPages(pdfDoc.numPages);
             }
           }}
           loading={
@@ -102,8 +105,14 @@ export default function PDFViewer({ pdfBlob, onPdfClick }: PDFViewerProps) {
           {Array.from(new Array(numPages || 0), (el, index) => (
             <div 
               key={`page_${index + 1}`} 
-              className="shadow-xl bg-white rounded-sm border border-gray-200 relative select-text cursor-crosshair overflow-hidden"
+              data-testid="pdf-page-container"
+              className="pdf-page-container shadow-xl bg-white rounded-sm border border-gray-200 relative cursor-crosshair overflow-hidden"
               onDoubleClick={(e) => handlePageDoubleClick(e, index + 1)}
+              onClick={(e) => {
+                if (e.detail === 2) {
+                  handlePageDoubleClick(e, index + 1);
+                }
+              }}
             >
               <Page 
                 pageNumber={index + 1} 

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { captureError } from "./error";
 
 // Centralized Axios instance for the SaaS
 export const apiClient = axios.create({
@@ -9,11 +10,16 @@ export const apiClient = axios.create({
   },
 });
 
-// We can easily add interceptors here later for Authentication!
+// Centralized Axios Interceptor for logging & Sentry error capture
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error("API Error:", error.response?.data || error.message);
+    captureError(error, {
+      url: error.config?.url,
+      method: error.config?.method,
+      status: error.response?.status,
+    });
     return Promise.reject(error);
   }
 );

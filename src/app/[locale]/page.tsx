@@ -8,7 +8,6 @@ import { useTranslations } from "next-intl";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { parseYaml, stringifyYaml, parseYamlDocument } from "../../lib/yaml";
-import * as Sentry from "@sentry/nextjs";
 
 import { 
   generatePDF, 
@@ -18,6 +17,10 @@ import {
   fetchSchema, 
   resolveSyncTex 
 } from "../../lib/api";
+import {
+  extractPageLineCount,
+  projectPdfClickToYamlLine,
+} from "../../lib/synctex-projection";
 
 // Dynamically load PDFViewer with SSR disabled since it uses canvas/window APIs
 const PDFViewer = dynamic(() => import("./PDFViewer"), { ssr: false });
@@ -25,12 +28,6 @@ const PDFViewer = dynamic(() => import("./PDFViewer"), { ssr: false });
 // Dynamically import RJSF Form to prevent SSR issues
 const RJSFForm = dynamic(() => import("@rjsf/core").then(mod => mod.default), { ssr: false });
 import validator from "@rjsf/validator-ajv8";
-
-const captureError = (err: any) => {
-  if (typeof window !== "undefined" && (window as any).Sentry) {
-    (window as any).Sentry.captureException(err);
-  }
-};
 
 export default function Home() {
   const t = useTranslations();
@@ -66,7 +63,6 @@ export default function Home() {
       })
       .catch(err => {
         console.error("Error loading profiles:", err);
-        captureError(err);
         setErrorMsg("The server encountered a problem loading profiles. Please try again later.");
       });
   }, []);
@@ -91,7 +87,6 @@ export default function Home() {
       })
       .catch(err => {
         console.error("Error loading file content:", err);
-        captureError(err);
         setErrorMsg("The server encountered a problem loading file content. Please try again later.");
       });
   }, [selectedProfile, activeFileType]);
@@ -106,7 +101,6 @@ export default function Home() {
       })
       .catch(err => {
         console.error("Error loading schema:", err);
-        captureError(err);
         setErrorMsg("The server encountered a problem loading form schema. Please try again later.");
       });
   }, [activeFileType]);
@@ -152,7 +146,6 @@ export default function Home() {
     },
     onError: (err: any) => {
       console.error("Save failed:", err);
-      captureError(err);
       setErrorMsg("The server encountered a problem saving your changes. Please try again later.");
     }
   });
@@ -166,52 +159,95 @@ export default function Home() {
     },
     onError: (error: any) => {
       console.error("Render failed:", error);
-      captureError(error);
       setErrorMsg("The server encountered a problem compiling your PDF. Please try again later.");
     }
   });
 
   // SyncTeX Click Resolution
-  const handlePdfClick = async (page: number, x: number, y: number) => {
+  const handlePdfClick = async (
+    page: number,
+    x: number,
+    y: number,
+    yFraction?: number,
+    pdfDoc?: any
+  ) => {
     try {
-      const result = await resolveSyncTex(page, x, y);
-      const path = result.yaml_path;
-      if (!path) return;
+      let targetLine: number | null = null;
 
-      if (activeTab === "code") {
-        // Code view highlight
-        if (editorRef.current) {
-          const doc = parseYamlDocument(yamlContent);
-          const pathKeys = path.split(".");
-          const node = doc.getIn(pathKeys, true);
-          
-          if (node && (node as any).range) {
-            const charOffset = (node as any).range[0];
-            const linesBefore = yamlContent.substring(0, charOffset).split("\n");
-            const lineNumber = linesBefore.length;
+      // 1. Primary: Senior-level Frontend Line Projection via PDF.js getTextContent
+      if (pdfDoc && typeof yFraction === "number") {
+        try {
+          const totalPages = pdfDoc.numPages || 1;
+          const pageLineCounts: number[] = [];
 
-            editorRef.current.revealLineInCenter(lineNumber);
-            editorRef.current.setPosition({ lineNumber, column: 1 });
-            editorRef.current.focus();
+          for (let p = 1; p <= totalPages; p++) {
+            const pdfPage = await pdfDoc.getPage(p);
+            const count = await extractPageLineCount(pdfPage);
+            pageLineCounts.push(count);
+          }
+
+          const totalYamlLines = yamlContent.split("\n").length;
+          const projection = projectPdfClickToYamlLine({
+            clickedPage: page,
+            yFraction,
+            pageLineCounts,
+            totalYamlLines,
+          });
+
+          if (projection.confidence > 0 && projection.targetLine > 0) {
+            targetLine = projection.targetLine;
+          }
+        } catch (projectionErr) {
+          console.warn("Frontend projection fallback exception:", projectionErr);
+        }
+      }
+
+      // 2. Secondary: SyncTeX Backend Word Matching
+      if (!targetLine) {
+        const result = await resolveSyncTex(page, x, y);
+        const texText = result.tex_text;
+
+        if (texText && texText.trim()) {
+          const words = texText
+            .split(/\s+/)
+            .map((w) => w.replace(/[^a-zA-Z0-9_-]/g, ""))
+            .filter((w) => w.length >= 3);
+
+          if (words.length > 0) {
+            const lines = yamlContent.split("\n");
+            let bestLine = -1;
+            let maxMatches = 0;
+
+            for (let i = 0; i < lines.length; i++) {
+              const lineLower = lines[i].toLowerCase();
+              let matches = 0;
+              for (const w of words) {
+                if (lineLower.includes(w.toLowerCase())) {
+                  matches++;
+                }
+              }
+              if (matches > maxMatches) {
+                maxMatches = matches;
+                bestLine = i + 1;
+              }
+            }
+
+            if (bestLine > 0) {
+              targetLine = bestLine;
+            }
           }
         }
-      } else {
-        // Form view highlight and focus
-        const elementId = `root_${path.replace(/\./g, "_")}`;
-        const inputElement = document.getElementById(elementId);
-        if (inputElement) {
-          inputElement.scrollIntoView({ behavior: "smooth", block: "center" });
-          inputElement.focus();
-          
-          // Flash highlight styling
-          inputElement.classList.add("ring-4", "ring-orange-300", "transition-all");
-          setTimeout(() => {
-            inputElement.classList.remove("ring-4", "ring-orange-300");
-          }, 1500);
-        }
+      }
+
+      // 3. Center Monaco Editor on target line
+      if (targetLine && targetLine > 0 && editorRef.current) {
+        editorRef.current.revealLineInCenter(targetLine);
+        editorRef.current.setPosition({ lineNumber: targetLine, column: 1 });
+        editorRef.current.focus();
       }
     } catch (err) {
       console.warn("SyncTeX location could not be resolved:", err);
+      setErrorMsg("SyncTeX location could not be mapped to source file.");
     }
   };
 

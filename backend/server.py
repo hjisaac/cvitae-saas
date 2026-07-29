@@ -241,35 +241,47 @@ def parse_synctex_coordinates(synctex_gz_path: Path, page: int, target_x: float,
     # Find matching nodes
     matching_nodes = []
     for node in nodes:
-        if (node["x_min"] <= target_x <= node["x_max"]) and (node["y_min"] <= target_y <= node["y_max"]):
+        # Add 10pt tolerance buffer to box boundaries
+        if (node["x_min"] - 10 <= target_x <= node["x_max"] + 10) and (node["y_min"] - 10 <= target_y <= node["y_max"] + 10):
             matching_nodes.append(node)
             
-    if not matching_nodes:
+    if not matching_nodes and nodes:
+        # Fallback to closest node by Euclidean distance if click is slightly outside text boxes
+        import math
+        best_node = min(nodes, key=lambda n: math.hypot(target_x - (n["x_min"] + n["x_max"])/2, target_y - (n["y_min"] + n["y_max"])/2))
+    elif matching_nodes:
+        # Sort by smallest area for maximum precision
+        matching_nodes.sort(key=lambda n: n["area"])
+        best_node = matching_nodes[0]
+    else:
         return None
         
-    # Sort by smallest area for maximum precision
-    matching_nodes.sort(key=lambda n: n["area"])
-    best_node = matching_nodes[0]
-    
     return {
         "file": inputs.get(best_node["tag"], "unknown"),
         "line": best_node["line"]
     }
 
-def map_tex_line_to_yaml_path(tex_path: Path, line_num: int) -> Optional[str]:
+def extract_text_at_line(tex_path: Path, line_num: int) -> str:
     if not tex_path.exists():
-        return None
+        return ""
     with open(tex_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
         
-    # Walk backward from target line to find nearest % SOURCE: comment
-    start_idx = min(line_num - 1, len(lines) - 1)
-    for idx in range(start_idx, -1, -1):
-        line = lines[idx].strip()
-        match = re.search(r"%\s*SOURCE:\s*(.*)", line)
-        if match:
-            return match.group(1).strip()
-    return None
+    start_idx = max(0, line_num - 1)
+    selected = []
+    for idx in range(start_idx, min(len(lines), start_idx + 4)):
+        l = lines[idx].strip()
+        if l and not l.startswith("%"):
+            selected.append(l)
+
+    raw_text = " ".join(selected) if selected else (lines[start_idx] if start_idx < len(lines) else "")
+    # Clean LaTeX markup to extract plain text words
+    clean = re.sub(r'\\[a-zA-Z]+\*?(?:\[[^\]]*\])?(?:\{([^\}]*)\})?', r' \1 ', raw_text)
+    clean = re.sub(r'[\{\}\\\%\#\&]', ' ', clean).strip()
+    return clean
+
+LETTER_PAGE_HEIGHT_PTS = 792.0
+FIRST_LINE_INDEX = 1
 
 @app.post("/synctex-resolve")
 def resolve_synctex(req: SyncTexRequest):
@@ -277,16 +289,26 @@ def resolve_synctex(req: SyncTexRequest):
     synctex_path = persistent_dir / "latest.synctex.gz"
     tex_path = persistent_dir / "latest.tex"
     
-    if not synctex_path.exists():
-        raise HTTPException(status_code=404, detail="No synctex file found. Render the PDF first.")
+    if synctex_path.exists():
+        result = parse_synctex_coordinates(synctex_path, req.page, req.x, req.y)
+        if result:
+            tex_text = extract_text_at_line(tex_path, result["line"])
+            return {
+                "tex_line": result["line"],
+                "tex_text": tex_text
+            }
         
-    result = parse_synctex_coordinates(synctex_path, req.page, req.x, req.y)
-    if not result:
-        raise HTTPException(status_code=404, detail="No source line matches these coordinates.")
-        
-    yaml_path = map_tex_line_to_yaml_path(tex_path, result["line"])
-    return {
-        "tex_file": result["file"],
-        "tex_line": result["line"],
-        "yaml_path": yaml_path
-    }
+    if tex_path.exists():
+        with open(tex_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+        total_lines = len(lines)
+        # Estimate line number from y position ratio
+        ratio = min(1.0, max(0.0, req.y / LETTER_PAGE_HEIGHT_PTS))
+        estimated_line = max(FIRST_LINE_INDEX, min(total_lines, int(ratio * total_lines)))
+        tex_text = extract_text_at_line(tex_path, estimated_line)
+        return {
+            "tex_line": estimated_line,
+            "tex_text": tex_text
+        }
+
+    raise HTTPException(status_code=404, detail="No source file available for preview.")
