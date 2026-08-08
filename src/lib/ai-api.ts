@@ -1,3 +1,5 @@
+import { MOCK_DELAY_MS } from "./constants";
+
 export type ChatMessage = {
   id: string;
   role: "user" | "ai";
@@ -20,7 +22,7 @@ export async function sendAITailorRequest(
   model: string
 ): Promise<AITailorResponse> {
   // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
+  await new Promise(resolve => setTimeout(resolve, MOCK_DELAY_MS));
 
   // Dummy logic: We just return a nice message and slightly tweak the YAML as proof of concept.
   const isCodeRequest = prompt.toLowerCase().includes("code") || prompt.toLowerCase().includes("yaml");
