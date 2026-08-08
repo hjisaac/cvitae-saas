@@ -10,4 +10,4 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-cvitae = { path = "../core-engine" }
+cvitae = { path = "../core-engine", editable = true }

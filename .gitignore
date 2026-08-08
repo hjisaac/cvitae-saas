@@ -9,3 +9,5 @@ yarn-error.log*
 pnpm-debug.log*
 .env*.local
 **/__pycache__/*
+test-results/
+tests/outputs/

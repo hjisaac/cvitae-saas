@@ -56,7 +56,7 @@ wheels = [
 [[package]]
 name = "cvitae"
 version = "0.1.0"
-source = { directory = "../core-engine" }
+source = { editable = "../core-engine" }
 dependencies = [
     { name = "fastapi" },
     { name = "jinja2" },
@@ -92,7 +92,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cvitae", directory = "../core-engine" },
+    { name = "cvitae", editable = "../core-engine" },
     { name = "fastapi" },
     { name = "python-multipart" },
     { name = "uvicorn", extras = ["standard"] },

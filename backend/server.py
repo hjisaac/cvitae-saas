@@ -28,9 +28,10 @@ class GenerateRequest(BaseModel):
 @app.post("/generate-pdf")
 async def generate_pdf(req: GenerateRequest):
     try:
-        from backend.loader import Loader, load_yaml_with_inheritance
+        from backend.loader import Loader, load_yaml, load_yaml_with_inheritance
         from backend.models import CVConfig, ContentData
         from backend.resolution import resolve_cv
+        from backend.translate import Translator
 
         cv_data = yaml.load(req.yaml_content, Loader=Loader) or {}
         if not isinstance(cv_data, dict):
@@ -40,18 +41,37 @@ async def generate_pdf(req: GenerateRequest):
         general_path = contents_dir / "cv_variants" / "general.yaml"
         base_variant = load_yaml_with_inheritance(general_path) if general_path.exists() else {}
 
+        # Set up translator using locale from config (default to "en")
+        locale = cv_data.get("locale", "en")
+        locales_dir = contents_dir / "cv_locales"
+        translator = Translator(locale, locales_dir)
+
+        # Translate ui labels
+        ui_path = contents_dir / "ui.static.yaml"
+        ui_raw = load_yaml(ui_path) if ui_path.exists() else {}
+        ui_labels = translator.data(ui_raw)
+
         if "sections" in cv_data:
-            config = CVConfig(**cv_data)
-            source = ContentData(**base_variant)
-            cv_data = resolve_cv(config, source)
-        elif "name" not in cv_data or "sections" not in cv_data:
+            # User edited a Selector file
+            config = CVConfig(**translator.data(cv_data))
+            source = ContentData(**translator.data(base_variant))
+            cv_data = resolve_cv(config, source, ui_labels, translator)
+        else:
+            # User edited a Variant file. Resolve against general/default selector.
             merged_variant = base_variant.copy()
             merged_variant.update(cv_data)
+            
             default_selector_path = contents_dir / "cv_selectors" / "general.yaml"
             selector_data = load_yaml_with_inheritance(default_selector_path) if default_selector_path.exists() else {"sections": []}
-            config = CVConfig(**selector_data)
-            source = ContentData(**merged_variant)
-            cv_data = resolve_cv(config, source)
+            
+            # Use locale from default selector or override
+            locale = selector_data.get("locale", locale)
+            translator = Translator(locale, locales_dir)
+            ui_labels = translator.data(ui_raw)
+
+            config = CVConfig(**translator.data(selector_data))
+            source = ContentData(**translator.data(merged_variant))
+            cv_data = resolve_cv(config, source, ui_labels, translator)
 
         # 1. Escape LaTeX characters
         escaped = escape_for_latex(cv_data)
