@@ -12,3 +12,4 @@ pnpm-debug.log*
 test-results/
 tests/outputs/
 .agents
+*.egg-info/
