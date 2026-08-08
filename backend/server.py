@@ -1,19 +1,24 @@
 import tempfile
 import os
+import json
 import yaml
 import re
 import shutil
 import gzip
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, Response
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, Response, JSONResponse
+from fastapi.exceptions import RequestValidationError
+from pydantic import BaseModel, ValidationError
+from pydantic_i18n import PydanticI18n
 from typing import Any, Dict, Optional
 
 from backend.latex import escape_for_latex, compile_pdf
 from backend.build import create_latex_template
 from backend.constants import TEMPLATES_DIR, CV_TEMPLATE_FILENAME, DEFAULT_ENCODING
 from backend.models import CVConfig, ContentData
+from backend.schema import translate_schema_descriptions
+from backend.translate import Translator
 
 app = FastAPI(title="CVitae Cloud Run Microservice")
 
@@ -21,9 +26,65 @@ app = FastAPI(title="CVitae Cloud Run Microservice")
 templates_dir = Path(__file__).parent / "templates" if (Path(__file__).parent / "templates").exists() else Path(__file__).parent.parent / "core-engine" / "templates"
 template = create_latex_template(templates_dir, template_filename=CV_TEMPLATE_FILENAME)
 
+contents_dir = Path(__file__).parent.parent / "core-engine" / "contents"
+locales_dir = contents_dir / "cv_locales"
+
+# Setup Pydantic-i18n translated validation errors
+def get_pydantic_i18n(locales_path: Path) -> PydanticI18n:
+    translations = {
+        "en": {
+            "Field required": "Field required",
+            "Input should be a valid string": "Input should be a valid string",
+            "Input should be a valid integer": "Input should be a valid integer",
+            "Input should be a valid list": "Input should be a valid list",
+            "Input should be a valid dictionary": "Input should be a valid dictionary",
+        },
+        "fr": {
+            "Field required": "Champ requis",
+            "Input should be a valid string": "La valeur doit être une chaîne de caractères valide",
+            "Input should be a valid integer": "La valeur doit être un entier valide",
+            "Input should be a valid list": "La valeur doit être une liste de valeurs valide",
+            "Input should be a valid dictionary": "La valeur doit être un dictionnaire valide",
+        }
+    }
+    
+    for locale in ["en", "fr"]:
+        locale_file = locales_path / f"{locale}.json"
+        if locale_file.exists():
+            try:
+                content = json.loads(locale_file.read_text(encoding="utf-8"))
+                # Merge key-values
+                for k, v in content.items():
+                    if v:
+                        translations.setdefault(locale, {})[k] = v
+            except Exception:
+                pass
+                
+    return PydanticI18n(translations, default_locale="en")
+
+pydantic_i18n = get_pydantic_i18n(locales_dir)
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    locale = request.query_params.get("locale", "en")
+    if locale not in ["en", "fr"]:
+        locale = "en"
+    translated = pydantic_i18n.translate(exc.errors(), locale=locale)
+    return JSONResponse(status_code=422, content={"detail": translated})
+
+@app.exception_handler(ValidationError)
+async def pydantic_validation_exception_handler(request: Request, exc: ValidationError):
+    locale = request.query_params.get("locale", "en")
+    if locale not in ["en", "fr"]:
+        locale = "en"
+    translated = pydantic_i18n.translate(exc.errors(), locale=locale)
+    return JSONResponse(status_code=422, content={"detail": translated})
+
+
 class GenerateRequest(BaseModel):
     # We accept the raw YAML content from the frontend
     yaml_content: str
+
 
 @app.post("/generate-pdf")
 async def generate_pdf(req: GenerateRequest):
@@ -37,13 +98,11 @@ async def generate_pdf(req: GenerateRequest):
         if not isinstance(cv_data, dict):
             cv_data = {}
 
-        contents_dir = Path(__file__).parent.parent / "core-engine" / "contents"
         general_path = contents_dir / "cv_variants" / "general.yaml"
         base_variant = load_yaml_with_inheritance(general_path) if general_path.exists() else {}
 
         # Set up translator using locale from config (default to "en")
         locale = cv_data.get("locale", "en")
-        locales_dir = contents_dir / "cv_locales"
         translator = Translator(locale, locales_dir)
 
         # Translate ui labels
@@ -116,9 +175,11 @@ async def generate_pdf(req: GenerateRequest):
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
 
 @app.get("/profiles")
 def list_profiles():
@@ -132,6 +193,7 @@ def list_profiles():
             continue
         profiles.append(file.stem)
     return sorted(profiles)
+
 
 @app.get("/file-content")
 def get_file_content(profile: str, file_type: str):
@@ -155,10 +217,12 @@ def get_file_content(profile: str, file_type: str):
     content = file_path.read_text(encoding="utf-8")
     return {"content": content, "filepath": str(file_path.relative_to(base_dir.parent.parent))}
 
+
 class SaveFileRequest(BaseModel):
     profile: str
     file_type: str
     content: str
+
 
 @app.post("/file-content")
 def save_file_content(req: SaveFileRequest):
@@ -179,18 +243,26 @@ def save_file_content(req: SaveFileRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.get("/schema/selector")
-def get_selector_schema():
-    return CVConfig.model_json_schema()
+def get_selector_schema(locale: str = "en"):
+    translator = Translator(locale, locales_dir)
+    schema = CVConfig.model_json_schema()
+    return translate_schema_descriptions(schema, translator)
+
 
 @app.get("/schema/variant")
-def get_variant_schema():
-    return ContentData.model_json_schema()
+def get_variant_schema(locale: str = "en"):
+    translator = Translator(locale, locales_dir)
+    schema = ContentData.model_json_schema()
+    return translate_schema_descriptions(schema, translator)
+
 
 class SyncTexRequest(BaseModel):
     page: int
     x: float
     y: float
+
 
 def parse_synctex_coordinates(synctex_gz_path: Path, page: int, target_x: float, target_y: float):
     if not synctex_gz_path.exists():
@@ -281,6 +353,7 @@ def parse_synctex_coordinates(synctex_gz_path: Path, page: int, target_x: float,
         "line": best_node["line"]
     }
 
+
 def extract_text_at_line(tex_path: Path, line_num: int) -> str:
     if not tex_path.exists():
         return ""
@@ -300,8 +373,10 @@ def extract_text_at_line(tex_path: Path, line_num: int) -> str:
     clean = re.sub(r'[\{\}\\\%\#\&]', ' ', clean).strip()
     return clean
 
+
 LETTER_PAGE_HEIGHT_PTS = 792.0
 FIRST_LINE_INDEX = 1
+
 
 @app.post("/synctex-resolve")
 def resolve_synctex(req: SyncTexRequest):

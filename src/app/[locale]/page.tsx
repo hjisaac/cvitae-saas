@@ -196,24 +196,23 @@ function SettingsDialog({
   );
 }
 
-// ─── Dynamic Island Variant Selector ────────────────────────────────────────────────
-function DynamicIslandVariantSelector({
-  profiles,
-  selected,
-  onSelect,
-  activeFileType,
-  onSetActiveFileType
-}: {
-  profiles: string[];
-  selected: string;
-  onSelect: (p: string) => void;
-  activeFileType: string;
-  onSetActiveFileType: (type: string) => void;
+// ─── Simple Variant Controls ────────────────────────────────────────────────────────
+function VariantControls({ 
+  profiles, 
+  selectedProfile,
+  activeTabType,
+  onOpenVariant,
+  onToggleFileType
+}: { 
+  profiles: string[]; 
+  selectedProfile: string;
+  activeTabType: string;
+  onOpenVariant: (p: string) => void;
+  onToggleFileType: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -223,98 +222,73 @@ function DynamicIslandVariantSelector({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  useEffect(() => {
-    if (open && inputRef.current) inputRef.current.focus();
-  }, [open]);
-
   const filtered = profiles.filter(p => p.toLowerCase().includes(query.toLowerCase()));
-  const isVariantActive = activeFileType === "variant";
-  const isSelectorActive = activeFileType === "selector";
+  const isYamlTab = activeTabType === "variant" || activeTabType === "selector";
 
   return (
-    <div ref={ref} className="relative pointer-events-auto shadow-lg rounded-full group">
-      {/* Unified Split Button */}
-      <div className={`flex items-stretch rounded-full border backdrop-blur-md transition-all bg-white/90 ${
-        isVariantActive || isSelectorActive || open ? "border-[var(--accent)]" : "border-gray-200"
-      }`}>
-        
-        {/* Dynamic Island Expansion (Selector Button) */}
-        <div className={`overflow-hidden transition-[max-width,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex items-center border-r ${
-          isSelectorActive 
-            ? "max-w-[140px] opacity-100 border-[var(--accent)]/20 bg-[var(--accent)]/10" 
-            : "max-w-0 opacity-0 border-transparent group-hover:max-w-[140px] group-hover:opacity-100 group-hover:border-gray-200 hover:bg-gray-50/90"
-        }`}>
-          <button
-            onClick={() => onSetActiveFileType("selector")}
-            className={`flex items-center gap-1.5 px-4 h-10 text-xs font-medium whitespace-nowrap rounded-l-full transition-colors ${
-              isSelectorActive ? "text-[var(--accent)]" : "text-gray-600"
-            }`}
-          >
-            <CheckCircle className="w-4 h-4 flex-shrink-0" />
-            <span>Selector</span>
-          </button>
-        </div>
-
-        {/* Variant Button (Always Visible) */}
-        <button
-          onClick={() => onSetActiveFileType("variant")}
-          className={`flex items-center gap-1.5 px-4 h-10 text-xs font-medium transition-colors ${
-            isVariantActive ? "bg-[var(--accent)]/10 text-[var(--accent)]" : "text-gray-700 hover:bg-gray-50/90"
-          } ${isSelectorActive ? "" : "rounded-l-full group-hover:rounded-l-none transition-[border-radius] duration-300"}`}
-        >
-          <img src="/logo.png" alt="CVitae Tailor" className="w-4 h-4 object-contain flex-shrink-0" />
-          <span className="max-w-[120px] truncate">{toLabel(selected)}</span>
-        </button>
-        
-        {/* Dropdown Chevron */}
-        <button
-          onClick={() => setOpen(v => !v)}
-          className={`flex items-center justify-center px-2 h-10 border-l transition-colors rounded-r-full ${
-            open ? "border-[var(--accent)]/20 bg-[var(--accent)]/5 text-[var(--accent)] hover:bg-[var(--accent)]/10" : "border-gray-200 text-gray-500 hover:bg-gray-50/90"
-          }`}
-        >
-          <ChevronDown className={`w-3 h-3 flex-shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
-        </button>
+    <div className="flex items-center gap-3 pointer-events-auto">
+      {/* Standalone Logo */}
+      <div className="flex items-center justify-center w-10 h-10 bg-white/90 backdrop-blur-md rounded-xl border border-gray-200 shadow-sm">
+        <img src="/logo.png" alt="Logo" className="w-5 h-5 object-contain" />
       </div>
 
-      {/* Dropdown */}
-      {open && (
-        <div className="absolute top-full left-0 mt-2 w-56 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-xl shadow-xl overflow-hidden z-50">
-          <div className="p-2 border-b border-gray-50">
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-              <input
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                placeholder="Search variants…"
-                className="flex-1 text-xs bg-transparent outline-none text-gray-700 placeholder-gray-400"
-              />
+      {/* Variant Dropdown */}
+      <div ref={ref} className="relative">
+        <button
+          onClick={() => setOpen(!open)}
+          className="flex items-center justify-between gap-2 px-4 h-10 bg-white/90 backdrop-blur-md border border-gray-200 rounded-xl shadow-sm hover:bg-white text-xs font-semibold text-gray-700 min-w-[140px]"
+        >
+          <span>{toLabel(selectedProfile)}</span>
+          <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+        </button>
+
+        {open && (
+          <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden z-50">
+            <div className="p-2 border-b border-gray-50">
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <input
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  placeholder="Search variants…"
+                  className="flex-1 w-full pl-8 pr-2 py-1.5 text-xs bg-gray-50 rounded-lg outline-none text-gray-700 placeholder-gray-400 focus:ring-1 focus:ring-[var(--accent)]"
+                  autoFocus
+                />
+              </div>
+            </div>
+            <div className="py-1 max-h-48 overflow-y-auto">
+              {filtered.length === 0 ? (
+                <p className="px-3 py-2 text-xs text-gray-400">No variants found</p>
+              ) : filtered.map(p => {
+                const active = p === selectedProfile;
+                const isBase = p === BASE_PROFILE;
+                return (
+                  <button key={p} onClick={() => { onOpenVariant(p); setOpen(false); setQuery(""); }}
+                    className={`w-full flex items-center justify-between px-3 py-2 text-left transition-colors hover:bg-gray-50 ${
+                      active ? "text-[var(--accent)] bg-orange-50/60 font-semibold" : "text-gray-700"
+                    }`}>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-medium">{toLabel(p)}</span>
+                      {!isBase && (
+                        <span className="text-[10px] text-gray-400 italic">↳ {toLabel(BASE_PROFILE)}</span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
-          {/* Options */}
-          <div className="py-1 max-h-48 overflow-y-auto">
-            {filtered.length === 0 ? (
-              <p className="px-3 py-2 text-xs text-gray-400">No variants found</p>
-            ) : filtered.map(p => {
-              const active = p === selected;
-              const isBase = p === BASE_PROFILE;
-              return (
-                <button key={p} onClick={() => { onSelect(p); onSetActiveFileType("variant"); setOpen(false); setQuery(""); }}
-                  className={`w-full flex items-center justify-between px-3 py-2 text-left transition-colors hover:bg-gray-50 ${
-                    active ? "text-[var(--accent)] bg-orange-50/60" : "text-gray-700"
-                  }`}>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-medium">{toLabel(p)}</span>
-                    {!isBase && (
-                      <span className="text-[10px] text-gray-400 italic">↳ {toLabel(BASE_PROFILE)}</span>
-                    )}
-                  </div>
-                  {active && <Check className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--accent)" }} />}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        )}
+      </div>
+
+      {/* Switch Toggle (Variant vs Selector) */}
+      {isYamlTab && (
+        <button
+          onClick={onToggleFileType}
+          className="px-4 h-10 bg-white/90 backdrop-blur-md border border-gray-200 rounded-xl shadow-sm hover:bg-white text-xs font-semibold text-gray-700 transition-colors"
+        >
+          {activeTabType === "variant" ? "Show Selector" : "Show Variant"}
+        </button>
       )}
     </div>
   );
@@ -698,13 +672,23 @@ function LanguageSelect({
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
+
+export type EditorTab = {
+  id: string;
+  title: string;
+  type: string;
+  profile: string;
+  content: string;
+};
+
 export default function Home() {
+
   const t = useTranslations();
 
   const [profiles, setProfiles] = useState<string[]>([]);
-  const [selectedProfile, setSelectedProfile] = useState<string>("general");
-  const [activeFileType, setActiveFileType] = useState<string>("variant");
-  const [yamlContent, setYamlContent] = useState<string>("");
+  const [openTabs, setOpenTabs] = useState<EditorTab[]>([]);
+  const [activeTabId, setActiveTabId] = useState<string | null>(null);
+  const [isFormView, setIsFormView] = useState<boolean>(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [schemaValidated, setSchemaValidated] = useState<boolean>(false);
@@ -720,33 +704,120 @@ export default function Home() {
     document.documentElement.style.setProperty("--accent-hover", accentColor);
   }, [accentColor]);
 
+  const handleOpenVariant = async (profile: string) => {
+    const variantId = `${profile}-variant`;
+    const selectorId = `${profile}-selector`;
+    
+    const existsVariant = openTabs.some(t => t.id === variantId);
+    const existsSelector = openTabs.some(t => t.id === selectorId);
+    
+    if (existsVariant && existsSelector) {
+      setActiveTabId(variantId);
+      return;
+    }
+    
+    let fetchTabs: EditorTab[] = [];
+    if (!existsVariant) {
+      try {
+        const data = await fetchFileContent(profile, "variant");
+        fetchTabs.push({ id: variantId, title: `${profile}.yaml`, type: "variant", profile, content: data.content });
+      } catch (e) { 
+        setErrorMsg("Could not load variant content."); 
+      }
+    }
+    if (!existsSelector) {
+      try {
+        const data = await fetchFileContent(profile, "selector");
+        fetchTabs.push({ id: selectorId, title: `selector.yaml`, type: "selector", profile, content: data.content });
+      } catch (e) {}
+    }
+    
+    if (fetchTabs.length > 0) {
+      setOpenTabs(current => {
+        const filteredFetch = fetchTabs.filter(ft => !current.some(ct => ct.id === ft.id));
+        return [...current, ...filteredFetch];
+      });
+    }
+    setActiveTabId(variantId);
+  };
+
+  const handleOpenLanguage = async (locale: string) => {
+    if (!activeTab) return;
+    const profile = activeTab.profile;
+    const tabId = `${profile}-${locale}`;
+    
+    if (openTabs.some(t => t.id === tabId)) {
+      setActiveTabId(tabId);
+      return;
+    }
+    
+    try {
+      const data = await fetchFileContent(profile, locale);
+      setOpenTabs(current => {
+        if (current.some(t => t.id === tabId)) return current;
+        return [...current, { id: tabId, title: `${locale}.json`, type: locale, profile, content: data.content }];
+      });
+      setActiveTabId(tabId);
+    } catch (e) { 
+      setErrorMsg(`Could not load ${locale} content.`); 
+    }
+  };
+
+  const handleToggleFileType = () => {
+    if (!activeTab) return;
+    const profile = activeTab.profile;
+    const currentType = activeTab.type;
+    if (currentType !== "variant" && currentType !== "selector") return;
+    const targetType = currentType === "variant" ? "selector" : "variant";
+    setActiveTabId(`${profile}-${targetType}`);
+  };
+
+  const handleCloseTab = (id: string) => {
+    setOpenTabs(tabs => {
+      const idx = tabs.findIndex(t => t.id === id);
+      const newTabs = tabs.filter(t => t.id !== id);
+      if (activeTabId === id) {
+        if (newTabs.length > 0) {
+          const nextIdx = Math.min(idx, newTabs.length - 1);
+          setActiveTabId(newTabs[nextIdx].id);
+        } else {
+          setActiveTabId(null);
+        }
+      }
+      return newTabs;
+    });
+  };
+
   useEffect(() => {
     fetchProfiles()
       .then(p => {
         setProfiles(p);
-        if (p.length > 0 && !p.includes("general")) setSelectedProfile(p[0]);
+        if (p.length > 0) {
+          const defaultProfile = p.includes("general") ? "general" : p[0];
+          handleOpenVariant(defaultProfile);
+        }
       })
       .catch(() => setErrorMsg("Could not load profiles. Is the backend running?"));
   }, []);
 
-  useEffect(() => {
-    if (!selectedProfile) return;
-    fetchFileContent(selectedProfile, activeFileType)
-      .then(data => {
-        setYamlContent(data.content);
-        try { parseYaml(data.content); setSchemaValidated(true); }
-        catch { setSchemaValidated(false); }
-      })
-      .catch(() => setErrorMsg("Could not load file content."));
-  }, [selectedProfile, activeFileType]);
-
-  useEffect(() => {
-    const t = activeFileType === "selector" ? "selector" : "variant";
-    fetchSchema(t).then(() => setSchemaValidated(true)).catch(() => setSchemaValidated(false));
-  }, [activeFileType]);
-
-  const handleEditorDidMount = (ed: any) => { editorRef.current = ed; };
-  const handleYamlChange = (v: string | undefined) => setYamlContent(v || "");
+  const handleEditorDidMount = (ed: any, monaco: any) => { 
+    editorRef.current = ed; 
+    ed.addAction({
+      id: 'go-to-parent-cv',
+      label: 'Go to Parent CV',
+      contextMenuGroupId: 'navigation',
+      contextMenuOrder: 1.5,
+      run: function () {
+        alert("Action triggered! We can navigate to the parent CV here.");
+      }
+    });
+  };
+  
+  const handleYamlChange = (v: string | undefined) => {
+    if (!activeTabId) return;
+    const newVal = v || "";
+    setOpenTabs(tabs => tabs.map(t => t.id === activeTabId ? { ...t, content: newVal } : t));
+  };
 
   const renderMutation = useMutation({
     mutationFn: (content: string) => generatePDF(content),
@@ -758,7 +829,10 @@ export default function Home() {
     },
   });
 
+  const activeTab = openTabs.find(t => t.id === activeTabId);
+
   const handlePdfClick = async (page: number, x: number, y: number, yFraction?: number, pdfDoc?: any) => {
+    if (!activeTab) return;
     try {
       let targetLine: number | null = null;
       if (pdfDoc && typeof yFraction === "number") {
@@ -766,14 +840,14 @@ export default function Home() {
           const counts: number[] = [];
           for (let p = 1; p <= (pdfDoc.numPages || 1); p++)
             counts.push(await extractPageLineCount(await pdfDoc.getPage(p)));
-          const proj = projectPdfClickToYamlLine({ clickedPage: page, yFraction, pageLineCounts: counts, totalYamlLines: yamlContent.split("\n").length });
+          const proj = projectPdfClickToYamlLine({ clickedPage: page, yFraction, pageLineCounts: counts, totalYamlLines: activeTab.content.split("\n").length });
           if (proj.confidence > 0 && proj.targetLine > 0) targetLine = proj.targetLine;
         } catch { /* fall through */ }
       }
       if (!targetLine) {
         const r = await resolveSyncTex(page, x, y);
         if (r.tex_line > 0) {
-          const lines = yamlContent.split("\n");
+          const lines = activeTab.content.split("\n");
           targetLine = Math.min(lines.length, Math.max(1, Math.round((r.tex_line / Math.max(1, lines.length)) * lines.length)));
         }
       }
@@ -800,16 +874,24 @@ export default function Home() {
 
           <Panel defaultSize={55} minSize={30} className="flex flex-col h-full relative">
             <span className="sr-only">{t("Variant Configuration")}</span>
-            <Editor
-              height="100%"
-              defaultLanguage={activeFileType.startsWith("locale_") ? "json" : "yaml"}
-              language={activeFileType.startsWith("locale_") ? "json" : "yaml"}
-              value={yamlContent}
-              onChange={handleYamlChange}
-              onMount={handleEditorDidMount}
-              theme="light"
-              options={{ minimap: { enabled: false }, fontSize: 13, lineHeight: 24, padding: { top: 72 }, scrollBeyondLastLine: false, smoothScrolling: true, cursorBlinking: "smooth" }}
-            />
+            <div className="flex-1 relative bg-white">
+               {!isFormView ? (
+                 <Editor
+                   height="100%"
+                   defaultLanguage={activeTab?.type.startsWith("locale_") ? "json" : "yaml"}
+                   language={activeTab?.type.startsWith("locale_") ? "json" : "yaml"}
+                   value={activeTab?.content || ""}
+                   onChange={handleYamlChange}
+                   onMount={handleEditorDidMount}
+                   theme="light"
+                   options={{ minimap: { enabled: false }, fontSize: 13, lineHeight: 24, padding: { top: 80 }, scrollBeyondLastLine: false, smoothScrolling: true, cursorBlinking: "smooth" }}
+                 />
+               ) : (
+                 <div className="h-full w-full flex items-center justify-center bg-gray-50 text-gray-400 text-sm">
+                   Dynamic Form View Placeholder
+                 </div>
+               )}
+            </div>
           </Panel>
 
           <PanelResizeHandle className="w-px bg-[var(--border)] hover:bg-[var(--accent)] hover:w-1 transition-all cursor-col-resize z-10" />
@@ -828,35 +910,79 @@ export default function Home() {
         </PanelGroup>
       </div>
 
-      {/* ═══════════════════════ FLOATING CONTROLS OVERLAY ════════════════ */}
-      <div className="absolute inset-0 pointer-events-none z-20 flex justify-between items-start p-4">
+      {/* ═══════════════════════ TRANSPARENT HEADER ════════════════ */}
+      <header className="absolute top-0 left-0 right-0 z-20 flex justify-between items-end px-4 h-16 bg-white/60 backdrop-blur-xl border-b border-white/50 shadow-sm pointer-events-none">
         
         {/* Left Side Controls */}
-        <div className="flex items-center gap-3">
-          {/* Dynamic Island Unified Button (Selector + Variant) */}
-          <DynamicIslandVariantSelector
-            profiles={profiles}
-            selected={selectedProfile}
-            onSelect={setSelectedProfile}
-            activeFileType={activeFileType}
-            onSetActiveFileType={setActiveFileType}
+        <div className="flex items-center gap-3 pb-3 pointer-events-auto">
+          <VariantControls 
+            profiles={profiles} 
+            selectedProfile={activeTab?.profile || "general"}
+            activeTabType={activeTab?.type || "variant"}
+            onOpenVariant={handleOpenVariant} 
+            onToggleFileType={handleToggleFileType}
           />
-
-          {/* Language Dropdown */}
           <LanguageSelect 
-            locales={LOCALE_TABS}
-            selected={activeFileType.startsWith("locale_") ? activeFileType : "locale_en"}
-            onSelect={setActiveFileType}
-            isActive={activeFileType.startsWith("locale_")}
+            locales={LOCALE_TABS} 
+            selected={activeTab?.type.startsWith("locale_") ? activeTab.type : "locale_en"} 
+            onSelect={handleOpenLanguage} 
+            isActive={activeTab?.type.startsWith("locale_") || false} 
           />
         </div>
 
+        {/* Center: File Tabs */}
+        <div className="flex-1 flex items-end justify-center h-full px-6 overflow-x-auto select-none pointer-events-auto hide-scrollbar">
+          {openTabs.map(tab => {
+            const isActive = activeTabId === tab.id;
+            return (
+              <div 
+                key={tab.id}
+                onClick={() => setActiveTabId(tab.id)}
+                className={`relative group flex items-center gap-2 px-4 h-11 max-w-[200px] cursor-pointer rounded-t-2xl transition-all border border-b-0 backdrop-blur-md ${
+                  isActive 
+                    ? "bg-white/95 border-gray-200 text-gray-800 shadow-sm z-10" 
+                    : "bg-white/40 border-transparent text-gray-600 hover:bg-white/60"
+                }`}
+                style={{ marginBottom: "-1px" }}
+              >
+                {isActive && <div className="absolute top-0 left-0 right-0 h-[3px] bg-[var(--accent)] rounded-t-2xl" />}
+                <span className="text-xs truncate font-semibold">{tab.title}</span>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleCloseTab(tab.id); }}
+                  className={`p-0.5 rounded-lg hover:bg-gray-200/60 transition-colors shrink-0 ${isActive ? "text-gray-400 hover:text-gray-700" : "text-transparent group-hover:text-gray-400 hover:!text-gray-700"}`}
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
         {/* Right Side Controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 pb-3 pointer-events-auto">
+          <div className="flex bg-white/70 p-1 rounded-xl shadow-sm backdrop-blur-md border border-gray-200/50 mr-2">
+            <button 
+              onClick={() => setIsFormView(false)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                !isFormView ? "bg-white text-[var(--accent)] shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
+              }`}
+            >
+              Code
+            </button>
+            <button 
+              onClick={() => setIsFormView(true)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 ${
+                isFormView ? "bg-white text-[var(--accent)] shadow-sm" : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
+              }`}
+            >
+              Form
+            </button>
+          </div>
+
           <button
-            onClick={() => renderMutation.mutate(yamlContent)}
-            disabled={renderMutation.isPending}
-            className="h-10 flex items-center gap-2 bg-[var(--accent)] text-white px-5 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity shadow-lg pointer-events-auto disabled:opacity-50"
+            onClick={() => renderMutation.mutate(activeTab?.content || "")}
+            disabled={renderMutation.isPending || !activeTab}
+            className="h-10 flex items-center gap-2 bg-[var(--accent)] text-white px-5 rounded-2xl text-sm font-semibold hover:opacity-90 transition-opacity shadow-lg disabled:opacity-50"
           >
             {renderMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
             {renderMutation.isPending ? t("Rendering") : t("Render PDF")}
@@ -864,13 +990,13 @@ export default function Home() {
 
           <UserMenu onOpenSettings={() => setSettingsOpen(true)} />
         </div>
-      </div>
+      </header>
 
       {/* Floating Draggable AI */}
       <DraggableAIBox 
         alwaysExpanded={aiAlwaysExpanded} 
-        yamlContent={yamlContent} 
-        onYamlChange={setYamlContent} 
+        yamlContent={activeTab?.content || ""} 
+        onYamlChange={handleYamlChange} 
       />
 
       {/* ═══════════════════════ ERROR TOAST ═══════════════════════════════ */}

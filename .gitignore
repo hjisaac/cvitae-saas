@@ -11,3 +11,4 @@ pnpm-debug.log*
 **/__pycache__/*
 test-results/
 tests/outputs/
+.agents
