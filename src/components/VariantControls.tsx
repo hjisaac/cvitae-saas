@@ -14,7 +14,7 @@ interface VariantControlsProps {
   onToggleViewType: (isForm: boolean) => void;
 }
 
-const toLabel = (p: string | undefined | null) =>
+const formatProfileNameToLabel = (p: string | undefined | null) =>
   (p || "").replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
 export function VariantControls({
@@ -53,7 +53,7 @@ export function VariantControls({
         >
           <div className="flex items-center gap-2.5">
             <img src="/logo.png" alt="Logo" className="w-4 h-4 object-contain" />
-            <span>{toLabel(selectedProfile)}</span>
+            <span>{formatProfileNameToLabel(selectedProfile)}</span>
           </div>
           <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
         </button>
@@ -84,7 +84,7 @@ export function VariantControls({
                       active ? "text-[var(--accent)] bg-orange-50/60 font-semibold" : "text-gray-700"
                     }`}>
                     <div className="flex flex-col">
-                      <span className="text-xs font-medium">{toLabel(p)}</span>
+                      <span className="text-xs font-medium">{formatProfileNameToLabel(p)}</span>
                     </div>
                     {active && <Check className="w-3.5 h-3.5 text-[var(--accent)]" />}
                   </button>

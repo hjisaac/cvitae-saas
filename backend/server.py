@@ -31,22 +31,7 @@ locales_dir = contents_dir / "cv_locales"
 
 # Setup Pydantic-i18n translated validation errors
 def get_pydantic_i18n(locales_path: Path) -> PydanticI18n:
-    translations = {
-        "en": {
-            "Field required": "Field required",
-            "Input should be a valid string": "Input should be a valid string",
-            "Input should be a valid integer": "Input should be a valid integer",
-            "Input should be a valid list": "Input should be a valid list",
-            "Input should be a valid dictionary": "Input should be a valid dictionary",
-        },
-        "fr": {
-            "Field required": "Champ requis",
-            "Input should be a valid string": "La valeur doit être une chaîne de caractères valide",
-            "Input should be a valid integer": "La valeur doit être un entier valide",
-            "Input should be a valid list": "La valeur doit être une liste de valeurs valide",
-            "Input should be a valid dictionary": "La valeur doit être un dictionnaire valide",
-        }
-    }
+    translations = {"en": {}, "fr": {}}
     
     for locale in ["en", "fr"]:
         locale_file = locales_path / f"{locale}.json"
@@ -56,7 +41,7 @@ def get_pydantic_i18n(locales_path: Path) -> PydanticI18n:
                 # Merge key-values
                 for k, v in content.items():
                     if v:
-                        translations.setdefault(locale, {})[k] = v
+                        translations[locale][k] = v
             except Exception:
                 pass
                 
