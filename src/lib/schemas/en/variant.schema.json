@@ -1,0 +1,663 @@
+{
+  "$defs": {
+    "AwardItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Unique reference selector key used in profile configs to select this item (e.g., 'best_paper')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Name of the award, honor, or grant (e.g., 'Best Paper Award')",
+          "type": "string"
+        },
+        "organization": {
+          "description": "Organization presenting the award (e.g., 'NeurIPS Conference')",
+          "type": "string"
+        },
+        "dates": {
+          "description": "Date or year received (e.g., 'Dec 2024')",
+          "type": "string"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Brief description of the award significance"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional bullet points detailing criteria or award details"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "organization",
+        "dates"
+      ],
+      "title": "AwardItem",
+      "type": "object"
+    },
+    "CertificationItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Unique reference selector key (e.g., 'aws_solutions_architect')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Name of the certification or credential (e.g., 'AWS Certified Solutions Architect')",
+          "type": "string"
+        },
+        "organization": {
+          "description": "Issuing authority or company (e.g., 'Amazon Web Services')",
+          "type": "string"
+        },
+        "dates": {
+          "description": "Issue and/or expiration dates (e.g., 'Jan 2024 \u2014 Present')",
+          "type": "string"
+        },
+        "organization_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional link to credential lookup or validation website"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "organization",
+        "dates"
+      ],
+      "title": "CertificationItem",
+      "type": "object"
+    },
+    "ContactInfoItem": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Name/Type of the contact method (e.g., 'Email', 'GitHub', 'LinkedIn', 'Phone', 'Address')",
+          "type": "string"
+        },
+        "icon": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Lucide or FontAwesome icon name/key to display alongside the contact info (e.g. 'envelope', 'github')"
+        },
+        "value": {
+          "description": "The actual contact detail (e.g., 'john.doe@example.com', '+123456789', 'github.com/johndoe')",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ],
+      "title": "ContactInfoItem",
+      "type": "object"
+    },
+    "EducationItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Unique reference selector key used in profile configs to select this item (e.g., 'msc_degree')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Headline for this entry (job title / degree title / project title / thesis title / publication title). Distinct from ContentData.title, which is the person's own professional title.",
+          "type": "string"
+        },
+        "organization": {
+          "description": "Name of the university, school, or institution (e.g., 'Stanford University')",
+          "type": "string"
+        },
+        "organization_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional website link for the educational institution"
+        },
+        "dates": {
+          "description": "Timeframe of the studies (e.g., '2019 \u2014 2021', 'Class of 2020')",
+          "type": "string"
+        },
+        "location": {
+          "description": "City and country of the institution (e.g., 'Stanford, CA, USA')",
+          "type": "string"
+        },
+        "footnote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Extra note (e.g., 'Graduated with high honors', 'GPA: 3.9/4.0')"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Brief description of the curriculum, majors, or focus areas"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "List of notable coursework, research projects, or extra-curricular activities"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "organization",
+        "dates",
+        "location"
+      ],
+      "title": "EducationItem",
+      "type": "object"
+    },
+    "PersonalProjectItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Unique reference selector key used in profile configs to select this item (e.g., 'cvitae')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Headline for this entry (job title / degree title / project title / thesis title / publication title). Distinct from ContentData.title, which is the person's own professional title.",
+          "type": "string"
+        },
+        "code_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Link to the repository source code (e.g., GitHub, GitLab)"
+        },
+        "demo_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Link to a live running demo or project homepage"
+        },
+        "paper_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Link to a publication or technical report describing the project work"
+        },
+        "footnote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional extra note or detail displayed below the project (e.g., 'Won 1st prize at Hackathon')"
+        },
+        "dates": {
+          "description": "Duration or completion date of the project (e.g., 'Dec 2023', '2021 \u2014 2022')",
+          "type": "string"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Short summary of what the project is and what problem it solves"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Bullet points detailing implementation details, architecture, or key results"
+        },
+        "tools": {
+          "description": "List of technologies, frameworks, or languages used (e.g., ['React', 'Python', 'Docker'])",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "dates",
+        "tools"
+      ],
+      "title": "PersonalProjectItem",
+      "type": "object"
+    },
+    "PublicationItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Unique reference selector key used in profile configs to select this item (e.g., 'attention_paper')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Headline for this entry (job title / degree title / project title / thesis title / publication title). Distinct from ContentData.title, which is the person's own professional title.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of publication (e.g., 'Conference Paper', 'Journal Article', 'Preprint', 'Thesis')",
+          "type": "string"
+        },
+        "organization": {
+          "description": "The publisher, conference, journal, or university (e.g., 'NeurIPS 2024', 'IEEE')",
+          "type": "string"
+        },
+        "organization_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Link to the publication page or PDF"
+        },
+        "dates": {
+          "description": "Date or year of publication (e.g., 'Dec 2024')",
+          "type": "string"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "type",
+        "organization",
+        "dates"
+      ],
+      "title": "PublicationItem",
+      "type": "object"
+    },
+    "RefereeItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Unique reference selector key used in profile configs to select this item (e.g., 'ref_advisor')",
+          "type": "string"
+        },
+        "name": {
+          "description": "Full name of the referee (e.g., 'Prof. Jane Smith')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Job title or relation of the referee (e.g., 'Senior Director of AI at Google', 'PhD Advisor')",
+          "type": "string"
+        },
+        "linkedin": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional LinkedIn profile URL of the referee"
+        }
+      },
+      "required": [
+        "selector",
+        "name",
+        "title"
+      ],
+      "title": "RefereeItem",
+      "type": "object"
+    },
+    "VolunteerItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Unique reference selector key (e.g., 'red_cross')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Volunteer role or project name (e.g., 'Crisis Counselor')",
+          "type": "string"
+        },
+        "organization": {
+          "description": "Non-profit or community service organization (e.g., 'Red Cross')",
+          "type": "string"
+        },
+        "dates": {
+          "description": "Timeline or duration of volunteering (e.g., '2021 \u2014 2022')",
+          "type": "string"
+        },
+        "location": {
+          "description": "Location or city (e.g., 'Remote', 'London, UK')",
+          "type": "string"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Brief summary of duties or cause"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional bullet points detailing achievements or tasks"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "organization",
+        "dates",
+        "location"
+      ],
+      "title": "VolunteerItem",
+      "type": "object"
+    },
+    "WorkExperienceItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Unique reference selector key used in profile configs to select this item (e.g., 'instadeep')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Headline for this entry (job title / degree title / project title / thesis title / publication title). Distinct from ContentData.title, which is the person's own professional title.",
+          "type": "string"
+        },
+        "organization": {
+          "description": "Company, firm, or institution name where you worked (e.g., 'InstaDeep', 'Google')",
+          "type": "string"
+        },
+        "organization_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional website link for the organization"
+        },
+        "dates": {
+          "description": "Timeframe of the employment (e.g., 'May 2021 \u2014 Present', '2018 \u2014 2020')",
+          "type": "string"
+        },
+        "location": {
+          "description": "City and country of the office/workplace (e.g., 'Paris, France', 'Remote')",
+          "type": "string"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Brief high-level description of the role, team, or core responsibilities"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "List of bullet points detailing achievements, responsibilities, and specific projects"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "organization",
+        "dates",
+        "location"
+      ],
+      "title": "WorkExperienceItem",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "description": "Your full name (e.g., 'Jane Doe')",
+      "type": "string"
+    },
+    "contact": {
+      "description": "List of contact methods to display on the CV header",
+      "items": {
+        "$ref": "#/$defs/ContactInfoItem"
+      },
+      "type": "array"
+    },
+    "title": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Your primary professional headline or job title (e.g., 'Senior Machine Learning Research Engineer')"
+    },
+    "summary": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "A professional summary or biography (often displayed under the header)"
+    },
+    "work_experience": {
+      "description": "List of professional employment history entries",
+      "items": {
+        "$ref": "#/$defs/WorkExperienceItem"
+      },
+      "type": "array"
+    },
+    "personal_projects": {
+      "description": "List of notable personal, open-source, or academic projects",
+      "items": {
+        "$ref": "#/$defs/PersonalProjectItem"
+      },
+      "type": "array"
+    },
+    "education": {
+      "description": "List of educational degrees and study entries",
+      "items": {
+        "$ref": "#/$defs/EducationItem"
+      },
+      "type": "array"
+    },
+    "skills": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "description": "Dictionary mapping skill categories (keys) to lists of skills (e.g., {'Languages': ['Python', 'C++'], 'Tools': ['Docker', 'Git']})",
+      "type": "object"
+    },
+    "languages": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Dictionary mapping spoken/written languages to fluency levels (e.g., {'English': 'Native', 'French': 'Professional Working'})",
+      "type": "object"
+    },
+    "referees": {
+      "description": "List of professional or academic references",
+      "items": {
+        "$ref": "#/$defs/RefereeItem"
+      },
+      "type": "array"
+    },
+    "publications": {
+      "description": "List of publications, preprints, patents, or theses",
+      "items": {
+        "$ref": "#/$defs/PublicationItem"
+      },
+      "type": "array"
+    },
+    "awards": {
+      "description": "List of awards, honors, or grants",
+      "items": {
+        "$ref": "#/$defs/AwardItem"
+      },
+      "type": "array"
+    },
+    "certifications": {
+      "description": "List of certifications or credentials",
+      "items": {
+        "$ref": "#/$defs/CertificationItem"
+      },
+      "type": "array"
+    },
+    "volunteering": {
+      "description": "List of volunteering or community involvement entries",
+      "items": {
+        "$ref": "#/$defs/VolunteerItem"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "name",
+    "contact",
+    "work_experience",
+    "personal_projects",
+    "education",
+    "skills",
+    "languages",
+    "referees"
+  ],
+  "title": "ContentData",
+  "type": "object"
+}

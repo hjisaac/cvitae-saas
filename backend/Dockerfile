@@ -20,4 +20,4 @@ RUN uv sync --frozen
 COPY . .
 
 # Run uvicorn server
-CMD ["uv", "run", "uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uv", "run", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]

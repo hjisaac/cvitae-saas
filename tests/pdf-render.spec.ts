@@ -8,8 +8,8 @@ test.describe("PDF Rendering Pipeline", () => {
     page.on("console", (msg) => {
       if (msg.type() === "error") {
         const text = msg.text();
-        // Ignore expected 404s like favicon
-        if (!text.includes("404")) {
+        // Ignore expected 404s like favicon and guest-mode 401s on account endpoints.
+        if (!text.includes("404") && !text.includes("401 (Unauthorized)")) {
           consoleErrors.push(text);
         }
       }

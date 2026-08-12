@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import "../globals.css";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { routing } from "../../i18n/routing";
+import { I18nProvider } from "../../i18n/I18nProvider";
+import { getMessages } from "../../i18n/get-messages";
+import { isAppLocale, locales } from "../../i18n/routing";
 import Providers from "../../lib/Providers";
 
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
+  return locales.map((locale) => ({ locale }));
 }
 
 export const metadata: Metadata = {
@@ -17,26 +17,24 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-  params
+  params,
 }: Readonly<{
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }>) {
   const { locale } = await params;
-  if (!routing.locales.includes(locale as any)) {
+  if (!isAppLocale(locale)) {
     notFound();
   }
 
-  const messages = await getMessages();
+  const messages = await getMessages(locale);
 
   return (
     <html lang={locale}>
       <body className="antialiased">
-        <NextIntlClientProvider messages={messages}>
-          <Providers>
-            {children}
-          </Providers>
-        </NextIntlClientProvider>
+        <I18nProvider locale={locale} messages={messages}>
+          <Providers>{children}</Providers>
+        </I18nProvider>
       </body>
     </html>
   );

@@ -1,0 +1,663 @@
+{
+  "$defs": {
+    "AwardItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Identifiant unique utilis\u00e9 dans les configurations de profil pour s\u00e9lectionner cet \u00e9l\u00e9ment (ex: 'best_paper')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Nom du prix, de la distinction ou de la bourse (ex: 'Best Paper Award')",
+          "type": "string"
+        },
+        "organization": {
+          "description": "Organisme d\u00e9cernant le prix (ex: 'Conf\u00e9rence NeurIPS')",
+          "type": "string"
+        },
+        "dates": {
+          "description": "Date ou ann\u00e9e de r\u00e9ception (par exemple, \u00ab\u00a0d\u00e9cembre\u00a02024\u00a0\u00bb)",
+          "type": "string"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Br\u00e8ve description de l'importance du prix"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Liste \u00e0 puces d\u00e9taillant les crit\u00e8res d'attribution ou les d\u00e9tails du prix (facultatif)"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "organization",
+        "dates"
+      ],
+      "title": "AwardItem",
+      "type": "object"
+    },
+    "CertificationItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Cl\u00e9 d'identification unique (ex: 'aws_solutions_architect')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Nom de la certification ou du dipl\u00f4me (ex: 'AWS Certified Solutions Architect')",
+          "type": "string"
+        },
+        "organization": {
+          "description": "Autorit\u00e9 ou entreprise \u00e9mettrice (par exemple, \u00ab Amazon Web Services \u00bb)",
+          "type": "string"
+        },
+        "dates": {
+          "description": "Dates d'\u00e9mission et/ou d'expiration (par exemple, \u00ab\u00a0janvier\u00a02024\u00a0-\u00a0pr\u00e9sent\u00a0\u00bb)",
+          "type": "string"
+        },
+        "organization_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Lien de v\u00e9rification de la certification (facultatif)"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "organization",
+        "dates"
+      ],
+      "title": "CertificationItem",
+      "type": "object"
+    },
+    "ContactInfoItem": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Nom/Type du moyen de contact (ex: 'Email', 'GitHub', 'LinkedIn')",
+          "type": "string"
+        },
+        "icon": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Nom/cl\u00e9 de l'ic\u00f4ne Lucide ou FontAwesome \u00e0 afficher \u00e0 c\u00f4t\u00e9 des informations de contact (par exemple \u00ab enveloppe \u00bb, \u00ab github \u00bb)"
+        },
+        "value": {
+          "description": "Coordonn\u00e9e de contact r\u00e9elle (ex: 'john.doe@example.com', 'github.com/johndoe')",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ],
+      "title": "ContactInfoItem",
+      "type": "object"
+    },
+    "EducationItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Identifiant unique utilis\u00e9 dans les configurations de profil pour s\u00e9lectionner cet \u00e9l\u00e9ment (ex: 'msc_degree')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Titre de cette entr\u00e9e (titre du poste / titre du dipl\u00f4me / titre du projet / titre de la th\u00e8se / titre de la publication). Distinct de ContentData.title, qui est le titre professionnel de la personne.",
+          "type": "string"
+        },
+        "organization": {
+          "description": "Nom de l'universit\u00e9, \u00e9cole ou \u00e9tablissement (ex: 'Stanford University')",
+          "type": "string"
+        },
+        "organization_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Lien vers le site de l'\u00e9tablissement (facultatif)"
+        },
+        "dates": {
+          "description": "P\u00e9riode d'\u00e9tudes (ex: '2019 \u2014 2021', 'Promotion 2020')",
+          "type": "string"
+        },
+        "location": {
+          "description": "Ville et pays de l'\u00e9tablissement (par exemple, \u00ab\u00a0Stanford, CA, USA\u00a0\u00bb)",
+          "type": "string"
+        },
+        "footnote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Note suppl\u00e9mentaire (par exemple, \u00ab\u00a0Dipl\u00f4m\u00e9 avec mention tr\u00e8s bien\u00a0\u00bb, \u00ab\u00a0GPA\u00a0:\u00a03,9/4,0\u00a0\u00bb)"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Br\u00e8ve description du programme, des sp\u00e9cialisations ou des domaines d'intervention"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Liste des cours, projets de recherche ou activit\u00e9s extrascolaires notables"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "organization",
+        "dates",
+        "location"
+      ],
+      "title": "EducationItem",
+      "type": "object"
+    },
+    "PersonalProjectItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Identifiant unique utilis\u00e9 dans les configurations de profil pour s\u00e9lectionner cet \u00e9l\u00e9ment (ex: 'cvitae')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Titre de cette entr\u00e9e (titre du poste / titre du dipl\u00f4me / titre du projet / titre de la th\u00e8se / titre de la publication). Distinct de ContentData.title, qui est le titre professionnel de la personne.",
+          "type": "string"
+        },
+        "code_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Lien vers le code source du r\u00e9f\u00e9rentiel (par exemple, GitHub, GitLab)"
+        },
+        "demo_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Lien vers une d\u00e9mo en direct ou la page d'accueil du projet"
+        },
+        "paper_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Lien vers une publication ou un rapport technique d\u00e9crivant le travail du projet"
+        },
+        "footnote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Note additionnelle ou d\u00e9tail affich\u00e9 sous le projet (ex: '1er prix obtenu au Hackathon')"
+        },
+        "dates": {
+          "description": "Dur\u00e9e ou date d'ach\u00e8vement du projet (par exemple, \u00ab\u00a0d\u00e9cembre\u00a02023\u00a0\u00bb, \u00ab\u00a02021\u00a0-\u00a02022\u00a0\u00bb)",
+          "type": "string"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Bref r\u00e9sum\u00e9 du projet et du probl\u00e8me qu'il r\u00e9sout"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Puces d\u00e9taillant les d\u00e9tails de la mise en \u0153uvre, l'architecture ou les principaux r\u00e9sultats"
+        },
+        "tools": {
+          "description": "Liste des technologies, frameworks ou langages utilis\u00e9s (par exemple, ['React', 'Python', 'Docker'])",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "dates",
+        "tools"
+      ],
+      "title": "PersonalProjectItem",
+      "type": "object"
+    },
+    "PublicationItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Identifiant unique utilis\u00e9 dans les configurations de profil pour s\u00e9lectionner cet \u00e9l\u00e9ment (ex: 'attention_paper')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Titre de cette entr\u00e9e (titre du poste / titre du dipl\u00f4me / titre du projet / titre de la th\u00e8se / titre de la publication). Distinct de ContentData.title, qui est le titre professionnel de la personne.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type de publication (ex: 'Conf\u00e9rence', 'Article de Journal', 'Pr\u00e9publication', 'M\u00e9moire')",
+          "type": "string"
+        },
+        "organization": {
+          "description": "L'\u00e9diteur, la conf\u00e9rence, le journal ou l'universit\u00e9 (ex: 'NeurIPS 2024', 'IEEE')",
+          "type": "string"
+        },
+        "organization_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Lien vers la page de publication ou PDF"
+        },
+        "dates": {
+          "description": "Date ou ann\u00e9e de publication (par exemple, \u00ab\u00a0d\u00e9cembre\u00a02024\u00a0\u00bb)",
+          "type": "string"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "type",
+        "organization",
+        "dates"
+      ],
+      "title": "PublicationItem",
+      "type": "object"
+    },
+    "RefereeItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Cl\u00e9 de s\u00e9lection de r\u00e9f\u00e9rence unique utilis\u00e9e dans les configurations de profil pour s\u00e9lectionner cet \u00e9l\u00e9ment (par exemple, \u00ab\u00a0ref_advisor\u00a0\u00bb)",
+          "type": "string"
+        },
+        "name": {
+          "description": "Nom complet de l'arbitre (par exemple, \u00ab\u00a0Prof. Jane Smith\u00a0\u00bb)",
+          "type": "string"
+        },
+        "title": {
+          "description": "Titre du poste ou relation de l'arbitre (par exemple, \"Directeur principal de l'IA chez Google\", \"Conseiller de doctorat\")",
+          "type": "string"
+        },
+        "linkedin": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "URL facultative du profil LinkedIn du r\u00e9pondant"
+        }
+      },
+      "required": [
+        "selector",
+        "name",
+        "title"
+      ],
+      "title": "RefereeItem",
+      "type": "object"
+    },
+    "VolunteerItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Cl\u00e9 d'identification unique (ex: 'red_cross')",
+          "type": "string"
+        },
+        "title": {
+          "description": "R\u00f4le de b\u00e9n\u00e9vole ou nom du projet (ex: 'Conseiller de crise')",
+          "type": "string"
+        },
+        "organization": {
+          "description": "Association ou organisme de service communautaire (ex: 'Red Cross')",
+          "type": "string"
+        },
+        "dates": {
+          "description": "P\u00e9riode ou dur\u00e9e du b\u00e9n\u00e9volat (ex: '2021 \u2014 2022')",
+          "type": "string"
+        },
+        "location": {
+          "description": "Emplacement ou ville (par exemple, \u00ab\u00a0\u00c0 distance\u00a0\u00bb, \u00ab\u00a0Londres, Royaume-Uni\u00a0\u00bb)",
+          "type": "string"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Bref r\u00e9sum\u00e9 des fonctions ou de la cause"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Liste \u00e0 puces d\u00e9crivant les r\u00e9alisations ou les t\u00e2ches accomplies (facultatif)"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "organization",
+        "dates",
+        "location"
+      ],
+      "title": "VolunteerItem",
+      "type": "object"
+    },
+    "WorkExperienceItem": {
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Identifiant unique utilis\u00e9 dans les configurations de profil pour s\u00e9lectionner cet \u00e9l\u00e9ment (ex: 'instadeep')",
+          "type": "string"
+        },
+        "title": {
+          "description": "Titre de cette entr\u00e9e (titre du poste / titre du dipl\u00f4me / titre du projet / titre de la th\u00e8se / titre de la publication). Distinct de ContentData.title, qui est le titre professionnel de la personne.",
+          "type": "string"
+        },
+        "organization": {
+          "description": "Nom de l'entreprise, de l'entreprise ou de l'institution o\u00f9 vous avez travaill\u00e9 (par exemple, \"InstaDeep\", \"Google\")",
+          "type": "string"
+        },
+        "organization_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Lien vers le site web de l'entreprise (facultatif)"
+        },
+        "dates": {
+          "description": "P\u00e9riode d'emploi (ex: 'Mai 2021 \u2014 Pr\u00e9sent', '2018 \u2014 2020')",
+          "type": "string"
+        },
+        "location": {
+          "description": "Ville et pays du bureau/lieu de travail (par exemple, \u00ab\u00a0Paris, France\u00a0\u00bb, \u00ab \u00c0 distance \u00bb)",
+          "type": "string"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Br\u00e8ve description g\u00e9n\u00e9rale du r\u00f4le, de l'\u00e9quipe ou des responsabilit\u00e9s principales"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Liste de puces d\u00e9taillant les r\u00e9alisations, les responsabilit\u00e9s et les projets sp\u00e9cifiques"
+        }
+      },
+      "required": [
+        "selector",
+        "title",
+        "organization",
+        "dates",
+        "location"
+      ],
+      "title": "WorkExperienceItem",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "description": "Votre nom complet (ex: 'Jane Doe')",
+      "type": "string"
+    },
+    "contact": {
+      "description": "Liste des modes de contact \u00e0 afficher sur l'en-t\u00eate du CV",
+      "items": {
+        "$ref": "#/$defs/ContactInfoItem"
+      },
+      "type": "array"
+    },
+    "title": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Votre titre professionnel principal (ex: 'Senior Machine Learning Research Engineer')"
+    },
+    "summary": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Un r\u00e9sum\u00e9 professionnel ou une biographie (souvent affich\u00e9 sous l'en-t\u00eate)"
+    },
+    "work_experience": {
+      "description": "Liste des entr\u00e9es d'ant\u00e9c\u00e9dents professionnels professionnels",
+      "items": {
+        "$ref": "#/$defs/WorkExperienceItem"
+      },
+      "type": "array"
+    },
+    "personal_projects": {
+      "description": "Liste de projets personnels, open source ou acad\u00e9miques notables",
+      "items": {
+        "$ref": "#/$defs/PersonalProjectItem"
+      },
+      "type": "array"
+    },
+    "education": {
+      "description": "Liste des dipl\u00f4mes et des inscriptions aux \u00e9tudes",
+      "items": {
+        "$ref": "#/$defs/EducationItem"
+      },
+      "type": "array"
+    },
+    "skills": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "description": "Dictionnaire mappant les cat\u00e9gories de comp\u00e9tences (cl\u00e9s) \u00e0 des listes de comp\u00e9tences (par exemple, {'Langues'\u00a0: ['Python', 'C++'], 'Outils' : ['Docker', 'Git']})",
+      "type": "object"
+    },
+    "languages": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Dictionnaire mappant les langues parl\u00e9es/\u00e9crites aux niveaux de ma\u00eetrise (par exemple, {'Anglais' : 'Native', 'Fran\u00e7ais' : 'Professional Working'})",
+      "type": "object"
+    },
+    "referees": {
+      "description": "Liste de r\u00e9f\u00e9rences professionnelles ou acad\u00e9miques",
+      "items": {
+        "$ref": "#/$defs/RefereeItem"
+      },
+      "type": "array"
+    },
+    "publications": {
+      "description": "Liste des publications, pr\u00e9publications, brevets ou th\u00e8ses",
+      "items": {
+        "$ref": "#/$defs/PublicationItem"
+      },
+      "type": "array"
+    },
+    "awards": {
+      "description": "Liste des prix, distinctions ou subventions",
+      "items": {
+        "$ref": "#/$defs/AwardItem"
+      },
+      "type": "array"
+    },
+    "certifications": {
+      "description": "Liste des certifications ou titres de comp\u00e9tences",
+      "items": {
+        "$ref": "#/$defs/CertificationItem"
+      },
+      "type": "array"
+    },
+    "volunteering": {
+      "description": "Liste des entr\u00e9es de b\u00e9n\u00e9volat ou d'implication communautaire",
+      "items": {
+        "$ref": "#/$defs/VolunteerItem"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "name",
+    "contact",
+    "work_experience",
+    "personal_projects",
+    "education",
+    "skills",
+    "languages",
+    "referees"
+  ],
+  "title": "ContentData",
+  "type": "object"
+}

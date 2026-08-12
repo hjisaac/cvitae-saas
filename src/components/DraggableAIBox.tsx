@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Sparkles, X, ChevronDown, Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations } from "../i18n/use-translations";
 import { sendAITailorRequest, type ChatMessage } from "../lib/ai-api";
 
 interface DraggableAIBoxProps {
@@ -172,6 +172,7 @@ export function DraggableAIBox({
       {!isBoxExpanded && (
         <button
           aria-label={t("AI Tailor")}
+          title={t("Hello! I can help you tailor this CV; Try asking me to \"rewrite the summary to be more management focused\" or \"add a skill section\"")}
           className="flex items-center gap-3 px-5 h-full w-full text-left transition-colors hover:bg-gray-50 flex-shrink-0 focus:outline-none pointer-events-auto"
         >
           <Sparkles className="w-4 h-4 text-[var(--accent)] flex-shrink-0 animate-pulse" />
@@ -195,6 +196,8 @@ export function DraggableAIBox({
             <button 
               onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
               className="absolute top-3 right-3 p-1.5 text-gray-400 hover:bg-gray-100 rounded-lg transition-colors z-20 no-drag"
+              aria-label={t("Collapse AI assistant")}
+              title={t("Collapse AI assistant")}
             >
               <X className="w-4 h-4" />
             </button>

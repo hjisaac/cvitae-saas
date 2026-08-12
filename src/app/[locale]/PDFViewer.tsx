@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Loader2, ZoomIn, ZoomOut } from "lucide-react";
+import { useTranslations } from "../../i18n/use-translations";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 
@@ -11,6 +12,7 @@ interface PDFViewerProps {
 }
 
 export default function PDFViewer({ pdfBlob, onPdfClick }: PDFViewerProps) {
+  const t = useTranslations();
   const [numPages, setNumPages] = useState<number | null>(null);
   const [scale, setScale] = useState<number>(1.1);
   const [pdfComponents, setPdfComponents] = useState<{ Document: any; Page: any } | null>(null);
@@ -57,7 +59,7 @@ export default function PDFViewer({ pdfBlob, onPdfClick }: PDFViewerProps) {
     return (
       <div className="flex items-center justify-center h-full w-full bg-[#e8e6e1] text-gray-500 gap-2 shadow-inner">
         <Loader2 className="w-5 h-5 animate-spin" />
-        <span>Initializing PDF Engine...</span>
+        <span>{t("Initializing PDF engine...")}</span>
       </div>
     );
   }
@@ -66,12 +68,12 @@ export default function PDFViewer({ pdfBlob, onPdfClick }: PDFViewerProps) {
 
   return (
     <div className="flex flex-col h-full w-full">
-      {/* Zoom Controls */}
       <div className="flex items-center gap-4 px-4 py-2 border-b border-[var(--border)] bg-[#f5f4f1] justify-end">
         <button 
           onClick={() => setScale(s => Math.max(s - 0.1, 0.5))}
           className="p-1 rounded hover:bg-gray-200 transition-colors"
-          title="Zoom Out"
+          title={t("Zoom Out")}
+          aria-label={t("Zoom Out")}
         >
           <ZoomOut className="w-4 h-4 text-gray-600" />
         </button>
@@ -79,13 +81,13 @@ export default function PDFViewer({ pdfBlob, onPdfClick }: PDFViewerProps) {
         <button 
           onClick={() => setScale(s => Math.min(s + 0.1, 2.0))}
           className="p-1 rounded hover:bg-gray-200 transition-colors"
-          title="Zoom In"
+          title={t("Zoom In")}
+          aria-label={t("Zoom In")}
         >
           <ZoomIn className="w-4 h-4 text-gray-600" />
         </button>
       </div>
 
-      {/* PDF Pages Scroll Area */}
       <div className="flex-1 p-4 bg-[#e8e6e1] overflow-y-auto flex flex-col items-center gap-4 shadow-inner">
         <Document
           file={pdfBlob}
@@ -98,7 +100,7 @@ export default function PDFViewer({ pdfBlob, onPdfClick }: PDFViewerProps) {
           loading={
             <div className="flex items-center gap-2 text-gray-500">
               <Loader2 className="w-5 h-5 animate-spin" />
-              <span>Loading PDF document...</span>
+              <span>{t("Loading PDF document...")}</span>
             </div>
           }
         >

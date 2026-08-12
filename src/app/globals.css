@@ -99,3 +99,181 @@ body {
   margin-top: 0;
   color: var(--primary);
 }
+
+/* ═══════════════════════ RJSF DYNAMIC FORM STYLING ═══════════════════════ */
+.rjsf-form-container {
+  padding: 1.5rem;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.rjsf-form-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-bottom: 5rem;
+}
+
+.rjsf-form-container fieldset {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+.rjsf-form-container legend {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+  padding: 0 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.rjsf-form-container .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.rjsf-form-container label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #5C544E;
+}
+
+.rjsf-form-container input[type="text"],
+.rjsf-form-container input[type="number"],
+.rjsf-form-container input[type="email"],
+.rjsf-form-container input[type="url"],
+.rjsf-form-container textarea,
+.rjsf-form-container select {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  color: var(--foreground);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.rjsf-form-container input:focus,
+.rjsf-form-container textarea:focus,
+.rjsf-form-container select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(216, 111, 69, 0.15);
+}
+
+.rjsf-form-container textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.rjsf-form-container select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232C2621' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2rem;
+}
+
+.rjsf-form-container .help-block {
+  font-size: 0.75rem;
+  color: #7C746E;
+  margin-top: 0.2rem;
+}
+
+/* Array elements & control buttons */
+.rjsf-form-container .array-item {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+.rjsf-form-container .btn-add,
+.rjsf-form-container .array-item-add {
+  background: var(--accent);
+  color: white;
+  font-size: 0.825rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: opacity 0.2s;
+}
+
+.rjsf-form-container .btn-add:hover,
+.rjsf-form-container .array-item-add:hover {
+  opacity: 0.9;
+}
+
+.rjsf-form-container .array-item-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.rjsf-form-container .array-item-toolbar button {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #5C544E;
+  transition: all 0.2s;
+}
+
+.rjsf-form-container .array-item-toolbar button:hover {
+  background: #F5F3F0;
+  border-color: #D3CECA;
+}
+
+.rjsf-form-container .array-item-toolbar button.array-item-remove {
+  color: #DF4A4A;
+  border-color: rgba(223, 74, 74, 0.2);
+  background: rgba(223, 74, 74, 0.03);
+}
+
+.rjsf-form-container .array-item-toolbar button.array-item-remove:hover {
+  background: rgba(223, 74, 74, 0.08);
+  border-color: rgba(223, 74, 74, 0.4);
+}
+
+/* Validation and error lists at top/bottom of form */
+.rjsf-form-container .error-detail {
+  font-size: 0.75rem;
+  color: #DF4A4A;
+  margin-top: 0.2rem;
+  font-weight: 500;
+}
+
+.rjsf-form-container .panel-danger {
+  border: 1px solid rgba(223, 74, 74, 0.3);
+  background: rgba(223, 74, 74, 0.03);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.rjsf-form-container .panel-danger h4 {
+  color: #DF4A4A;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+

@@ -1,0 +1,31 @@
+__selection_type: include
+sections:
+  - selector: "summary"
+  - selector: "work_experience"
+    items:
+      - "instadeep"
+      - "fasfox_backend"
+      - "fasfox_frontend"
+      - "anac_intern"
+  - selector: "personal_projects"
+    items:
+      - "run_crucible"
+      - "billvoicer"
+      - "recommender_system"
+      - "bvote"
+      - "nsequence"
+      - "stream_processing"
+  - selector: "technologies"
+  - selector: "education"
+    items:
+      - "aims_masters"
+      - "imsp_masters"
+  - selector: "publications"
+    items:
+      - "aims_thesis"
+      - "imsp_thesis"
+  - selector: "languages"
+  - selector: "referees"
+    items:
+      - "lelio_renard"
+      - "anicet_hounkanrin"

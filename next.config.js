@@ -1,12 +1,12 @@
-const createNextIntlPlugin = require('next-intl/plugin');
-
-const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ["react-pdf", "pdfjs-dist"],
   webpack: (config) => {
+    config.module.rules.push({
+      test: /\.yaml$/,
+      type: "asset/source",
+    });
     config.resolve.alias.canvas = false;
     config.resolve.alias.encoding = false;
     return config;
@@ -19,11 +19,11 @@ const nextConfig = {
         destination: `${coreEngineUrl}/generate-pdf`,
       },
       {
-        source: "/api/:path*",
+        source: "/api/:path((?!auth).*)",
         destination: `${coreEngineUrl}/:path*`,
       },
     ];
   },
 };
 
-module.exports = withNextIntl(nextConfig);
+module.exports = nextConfig;

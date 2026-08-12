@@ -11,9 +11,4 @@ export const ACCENT_PRESETS = [
 
 export const MOCK_DELAY_MS = 1500;
 
-export const LOCALE_TABS = [
-  { key: "locale_en", label: "EN", title: "English translations" },
-  { key: "locale_fr", label: "FR", title: "French translations" },
-];
-
 export const BASE_PROFILE = "general";

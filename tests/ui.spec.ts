@@ -58,4 +58,80 @@ test.describe("CVitae Tailor UI", () => {
     expect(bg).toBe("rgb(249, 248, 246)");
     console.log(`✅ Correct beige background applied: ${bg}`);
   });
+
+  test("frontend validation detects syntax errors and highlights them", async ({ page }) => {
+    await page.goto("/en");
+    await expect(page.locator(".monaco-editor")).toBeVisible({ timeout: 20000 });
+
+    // Set invalid YAML content
+    await page.evaluate(() => {
+      const models = (window as any).monaco.editor.getModels();
+      if (models.length > 0) {
+        models[0].setValue("invalid_yaml:\n  - incomplete: [\n  unbalanced: }");
+      }
+    });
+
+    // Check if the validation errors panel appears
+    const errorPanelHeader = page.getByText(/Validation Errors/i);
+    await expect(errorPanelHeader).toBeVisible({ timeout: 15000 });
+    console.log("✅ Live YAML syntax validation panel is verified!");
+  });
+
+  test("frontend validation flags unknown fields in contact items", async ({ page }) => {
+    await page.goto("/en");
+    await expect(page.locator(".monaco-editor")).toBeVisible({ timeout: 20000 });
+
+    await page.evaluate(() => {
+      const models = (window as any).monaco.editor.getModels();
+      if (models.length > 0) {
+        const current = models[0].getValue();
+        models[0].setValue(
+          current.replace(
+            'value: !t "Cape Town, South Africa"',
+            'value: !t "Cape Town, South Africa"\n    ieie: i"i"',
+          ),
+        );
+      }
+    });
+
+    const errorPanelHeader = page.getByText(/Validation Errors/i);
+    await expect(errorPanelHeader).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(/Unknown field/i)).toBeVisible({ timeout: 10000 });
+    console.log("✅ Unknown field validation is verified!");
+  });
+
+  test("frontend validation detects schema errors and highlights them", async ({ page }) => {
+    await page.goto("/en");
+    await expect(page.locator(".monaco-editor")).toBeVisible({ timeout: 20000 });
+
+    // Set invalid schema YAML content (contact must be array, but we pass string)
+    await page.evaluate(() => {
+      const models = (window as any).monaco.editor.getModels();
+      if (models.length > 0) {
+        models[0].setValue("name: 'Test'\ncontact: 'invalid_should_be_list'");
+      }
+    });
+
+    // Check if the validation errors panel shows the error
+    const errorPanelHeader = page.getByText(/Validation Errors/i);
+    await expect(errorPanelHeader).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("Input should be a valid list")).toBeVisible({ timeout: 10000 });
+    console.log("✅ Live JSON schema validation panel is verified!");
+  });
+
+  test("switching to Form View renders form fields dynamically", async ({ page }) => {
+    test.skip(true, "Form layout is out of scope for now");
+    await page.goto("/en");
+    await expect(page.locator(".monaco-editor")).toBeVisible({ timeout: 20000 });
+
+    // Click "Form" toggle button (View Type switch)
+    const formToggle = page.getByRole("button", { name: "Form" });
+    await expect(formToggle).toBeVisible();
+    await formToggle.click();
+
+    // Check if dynamic form fields are rendered (such as inputs and fieldsets)
+    const fieldset = page.locator(".rjsf-form-container fieldset").first();
+    await expect(fieldset).toBeVisible({ timeout: 25000 });
+    console.log("✅ Dynamic RJSF form is successfully rendered!");
+  });
 });

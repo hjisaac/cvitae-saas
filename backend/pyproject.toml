@@ -6,8 +6,11 @@ dependencies = [
     "fastapi",
     "uvicorn[standard]",
     "python-multipart",
+    "python-dotenv>=1.0.0",
     "cvitae",
     "pydantic-i18n",
+    "ulid-py>=1.1.0",
+    "peewee>=4.3.0",
 ]
 
 [tool.uv.sources]

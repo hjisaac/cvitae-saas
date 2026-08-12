@@ -1,0 +1,178 @@
+name: "Isaac Henri Joël Houngue"
+contact:
+  - name: location
+    icon: faMapMarker
+    value: !t "Cape Town, South Africa"
+  - name: email
+    icon: faEnvelope
+    value: "[hjisaac.h@gmail.com](mailto:hjisaac.h@gmail.com)"
+  - name: phone
+    icon: faPhone
+    value: "[+27 79 548 2528](tel:+27795482528)"
+  - name: linkedin
+    icon: faLinkedin
+    value: "[hjisaac](https://linkedin.com/in/hjisaac)"
+  - name: github
+    icon: faGithub
+    value: "[hjisaac](https://github.com/hjisaac)"
+
+title: !t "Software and Research Engineer"
+
+summary: !t |
+  Motivated and hardworking Software and Research Engineer with MSc backgrounds in Artificial Intelligence and Computer Science, combining 3+ years of software engineering experience with research engineering experience in machine learning and scientific AI systems. Strong debugging and problem-solving skills; passionate about developing intelligent systems and translating research into usable, simple, effective, robust, and innovative solutions. Proactive and initiative-driven, accustomed to quality-focused environments and ready to take on challenging tasks with confidence and commitment.
+
+work_experience:
+  - selector: instadeep
+    organization: "InstaDeep"
+    organization_url: "https://instadeep.com/"
+    title: !t "Apprentice Research Engineer"
+    dates: !t "Jul 2025 -- Now"
+    location: !t "South Africa, hybrid"
+    details:
+      - !t "Evaluated fine-tuning strategies for adapting InstaNovo, a transformer-based de novo peptide sequencing model, to glycopeptide sequencing tasks."
+      - !t "Explored contrastive learning, multi-task learning, knowledge distillation, curriculum learning, and transformer-variant architectures to improve sequencing performance."
+      - !t "Designed modular, pluggable components inspired by research papers to accelerate hypothesis testing and integration of new modeling approaches."
+      - !t "Conducted large-scale experiments and ablation studies on architectural choices, training strategies, and model components."
+      - !t "Designed synthetic glycopeptide datasets and multi-stage training strategies to improve representation learning and transfer to experimental tasks."
+      - !t "Performed glycopeptide spectral dataset analysis and feature selection studies to understand data characteristics and model limitations."
+      - !t "Documented research findings through technical reports, visualizations, and presentations."
+
+  - selector: fasfox_backend
+    organization: "Fasfox"
+    organization_url: "https://fasfox.com/"
+    title: !t "Backend Software Engineer"
+    dates: !t "Mar 2023 -- Sep 2024"
+    location: !t "Paris, remote"
+    details:
+      - !t "Enhanced the backend API of [Concrete Dispatch](https://www.concretedispatch.eu/) SaaS, a logistics platform for managing concrete deliveries (Django/DRF)."
+      - !t "Improved a fiber ordering and tracking product for AXIONE (Django/DRF)."
+      - !t "Developed a fault-tolerant daemon for parsing large CSV and eligibility data files for Fiber Dispatch (Django/Ninja)."
+      - !t "Built TMForum compliant endpoints for fiber order handling following interop protocols (Django/Ninja)."
+      - !t "Applied web scraping and AI-powered OCR to extract data from PDFs for real-time validation (Django/DRF)."
+      - !t "Built and maintained a daemon that listens to email inboxes and parses attachments to create objects across databases (Django/DRF)."
+
+  - selector: fasfox_frontend
+    organization: "Fasfox"
+    organization_url: "https://fasfox.com/"
+    title: !t "Frontend Software Engineer"
+    dates: !t "Oct 2021 -- Feb 2023"
+    location: !t "Paris, remote"
+    details:
+      - !t "Maintained and enhanced Concrete Dispatch SaaS PWAs: photo uploads, digital signatures, QR scanning, and interactive graphs (Vue.js/Nuxt.js)."
+      - !t "Developed an advanced slider for concrete volume tracking in the desktop web app (React.js/Next.js)."
+      - !t "Built an efficient concrete calculator for the Concrete Dispatch blog site (Hugo/JavaScript)."
+
+  - selector: anac_intern
+    organization: "National Civil Aviation Agency"
+    organization_url: "https://anac.bj/"
+    title: !t "Software Engineering Intern"
+    dates: !t "Aug 2019 -- Sep 2019"
+    location: !t "Benin, onsite"
+    details:
+      - !t "Developed a Python/Tkinter inventory management desktop application for tracking electronic equipment."
+      - !t "Assisted in maintenance of office and IT equipment."
+
+personal_projects:
+  - selector: run_crucible
+    title: "Run Crucible"
+    code_url: "https://github.com/hjisaac/run-crucible"
+    dates: !t "Feb 2026 -- Present"
+    summary: !t "Modular framework for managing and comparing machine learning experiments across training configurations and model architectures."
+    tools: ["Python", "PyTorch", "Hydra", "Docker"]
+
+  - selector: recommender_system
+    title: !t "Recommender System"
+    code_url: "https://github.com/hjisaac/recommender-system"
+    demo_url: "https://recommender-system-cixeur34nxyb5prblsl4yt.streamlit.app/"
+    dates: !t "Oct 2024 -- Feb 2025"
+    summary: !t "Developed a recommender system using ALS and collaborative filtering built using the MovieLens dataset."
+    tools: ["Python", "NumPy", "Streamlit"]
+
+  - selector: nsequence
+    title: "NSequence"
+    code_url: "https://github.com/wehappit/nsequence"
+    dates: !t "Jan 2024 -- Feb 2024"
+    summary: !t "Developed a Python library for manipulating progressions or sequences."
+    tools: ["Python"]
+
+  - selector: bvote
+    title: "BVote"
+    code_url: "https://github.com/orgs/BVote/"
+    dates: !t "Jun 2021 -- Jul 2021"
+    summary: !t "Developed a secure voting platform with anonymity via blind signatures and blockchain for transparency."
+    tools: ["Node.js", "ReactJS", "GraphQL", "HyperLedger", "MongoDB"]
+
+  - selector: stream_processing
+    title: !t "Stream Processing Engine"
+    code_url: "https://github.com/hjisaac/e-commerce-stream-processing"
+    dates: !t "Feb 2021 -- Mar 2021"
+    summary: !t "Built a simple e-commerce stream processing engine."
+    tools: ["Python", "Kafka", "Redis", "Socket.io"]
+
+  - selector: billvoicer
+    title: "Billvoicer"
+    footnote: !t "Private"
+    dates: !t "Jan 2023 -- Now"
+    summary: !t "Initiator and principal engineer of Billvoicer, driving the project's vision and technical development."
+    details:
+      - !t "Leading architecture design, feature development, and technology decisions."
+      - !t "Managing a team of interns, overseeing development activities, issue tracking, code reviews and more."
+      - !t "Ensuring seamless team communication and alignment with the product roadmap."
+    tools: ["Python (Django/Drf)", "VueJS/NuxtJS", "PostgreSQL", "Redis", "Celery"]
+
+education:
+  - selector: aims_masters
+    title: !t "Master in Artificial Intelligence"
+    organization: "African Institute for Mathematical Sciences (AIMS)"
+    organization_url: "https://aims.ac.za/"
+    dates: !t "Sep 2024 -- Jul 2025"
+    location: !t "South Africa"
+    footnote: !t "In partnership with the University of Cape Town."
+    details:
+      - !t "**Coursework:** Bayesian Inference, Machine Learning at Scale, Computer Vision, Reinforcement Learning, Deep Generative Models, Engineering LLMs, CUDA Programming, and more."
+      - !t "**Thesis:** Advancing De Novo Glycopeptide Sequencing with [InstaNovo](https://github.com/instadeepai/InstaNovo) in Glycoproteomics."
+
+  - selector: imsp_masters
+    title: !t "Master in Computer Science"
+    organization: "Institute of Mathematics and Physical Sciences (IMSP)"
+    organization_url: "https://www.imsp-benin.com/home/"
+    dates: !t "Oct 2018 -- Jul 2020"
+    location: !t "Benin"
+    details:
+      - !t "**Coursework:** Advanced Data Structures and Algorithms, Operating Systems, Software Architecture, Distributed Databases, Artificial Intelligence, Machine Learning and more."
+      - !t "**Thesis:** A Smart Contract-based Remote Voting Platform using Blind Signature."
+
+publications:
+  - selector: aims_thesis
+    title: "Advancing De Novo Glycopeptide Sequencing with InstaNovo in Glycoproteomics"
+    type: !t "MSc thesis"
+    organization: "African Institute for Mathematical Sciences (AIMS)"
+    organization_url: "https://aims.ac.za/"
+    dates: "2025"
+
+  - selector: imsp_thesis
+    title: "A Smart Contract-based Remote Voting Platform using Blind Signature"
+    type: !t "MSc thesis"
+    organization: "Institute of Mathematics and Physical Sciences (IMSP)"
+    organization_url: "https://www.imsp-benin.com/home/"
+    dates: "2020"
+
+skills:
+  programming_languages: ["Python", "JavaScript", "TypeScript"]
+  frameworks_and_libraries: ["Django", "DRF", "Flask", "Ninja", "Node.js", "Vue.js", "React.js", "Next.js", "GraphQL", "PyTorch", "Keras"]
+  infrastructure_and_tools: ["Linux", "Git", "Docker", "GCP", "AWS", "Kafka", "Spark", "PostgreSQL", "MongoDB", "Neo4j"]
+
+languages:
+  english: !t "Professional proficiency"
+  french: !t "Native"
+
+referees:
+  - selector: lelio_renard
+    name: "Lélio Renard Lavaud"
+    title: !t "Head of Engineering at Mistral AI, CEO and Chairman at Fasfox"
+    linkedin: "https://linkedin.com/in/leliorenardlavaud/en"
+
+  - selector: anicet_hounkanrin
+    name: "Dr. Anicet Hounkanrin"
+    title: !t "PhD in Electrical Engineering, University of Cape Town"
+    linkedin: "https://www.linkedin.com/in/anicet-hounkanrin-719657106/"
