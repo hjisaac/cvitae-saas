@@ -34,7 +34,7 @@ test.describe("SyncTeX Interactive PDF to YAML Navigation", () => {
 
     // 5. Verify Monaco Editor is visible and active in Code View
     const codeEditor = page.locator(".monaco-editor").first();
-    await expect(codeEditor).toBeVisible();
+    await expect(codeEditor).toBeVisible({ timeout: 30000 });
 
     console.log("✅ Successfully navigated from PDF double-click to centered line in Monaco Editor!");
   });

@@ -1,4 +1,4 @@
-.PHONY: dev-frontend dev-backend update-engine install
+.PHONY: dev-frontend dev-backend setup-backend setup-env update-engine install
 
 # Path to the compatible node binary (v22 from nvm)
 NODE := $(HOME)/.nvm/versions/node/v22.19.0/bin/node
@@ -17,9 +17,17 @@ dev-frontend:
 build:
 	$(NEXT) build
 
-# Run the FastAPI backend
+# Create .env.local with AUTH_SECRET (skipped if file already exists)
+setup-env:
+	bash scripts/setup-local-env.sh
+
+# Run the FastAPI backend (loads AUTH_SECRET from repo-root .env.local via python-dotenv)
 dev-backend:
-	cd backend && uv run uvicorn server:app --reload --port 8000
+	cd backend && uv sync && uv run uvicorn app:app --reload --port 8000
+
+# Create tables and seed local fixture data (run once when setting up your env)
+setup-backend:
+	cd backend && uv run python -m db.setup
 
 # Update the core-engine submodule to the latest main
 update-engine:

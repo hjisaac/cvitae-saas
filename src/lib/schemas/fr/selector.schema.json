@@ -1,0 +1,86 @@
+{
+  "$defs": {
+    "CVSectionConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Titre d'affichage personnalis\u00e9 pour cette section (remplacement du titre localis\u00e9 par d\u00e9faut de ui.static.yaml)"
+        },
+        "selector": {
+          "description": "Section selector mapping to one of the content categories (e.g., 'work_experience', 'personal_projects', 'education', 'skills', 'languages', 'referees', 'publications', 'awards', 'certifications', 'volunteering')",
+          "type": "string"
+        },
+        "items": {
+          "anyOf": [
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "additionalProperties": true,
+                    "type": "object"
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "List of item selector handles to include or exclude. Omit to include all entries by default"
+        }
+      },
+      "required": [
+        "selector"
+      ],
+      "title": "CVSectionConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "locale": {
+      "default": "en",
+      "description": "Langue cible pour le rendu (ex: 'en', 'fr')",
+      "type": "string"
+    },
+    "labels": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "default": {},
+      "description": "Dictionnaire de traductions d'\u00e9tiquettes de mise en page cl\u00e9-valeur personnalis\u00e9es rempla\u00e7ant les valeurs par d\u00e9faut",
+      "type": "object"
+    },
+    "__selection_type": {
+      "default": "include",
+      "description": "Selection mode for all section item lists: 'include' or 'exclude'",
+      "type": "string"
+    },
+    "sections": {
+      "description": "Liste ordonn\u00e9e des sections configurant la structure et le contenu du CV",
+      "items": {
+        "$ref": "#/$defs/CVSectionConfig"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "sections"
+  ],
+  "title": "CVConfig",
+  "type": "object"
+}

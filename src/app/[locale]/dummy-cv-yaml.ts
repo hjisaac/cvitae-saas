@@ -35,7 +35,7 @@ sections:
 - name: Work Experience
   type: work_experience
   entries:
-  - role: Apprentice Research Engineer
+  - title: Apprentice Research Engineer
     organization: InstaDeep
     organization_url: https://instadeep.com/
     dates: Jul 2025 -- Now
@@ -56,7 +56,7 @@ sections:
       to understand data characteristics and model limitations.
     - Documented research findings through technical reports, visualizations, and
       presentations.
-  - role: Backend Software Engineer
+  - title: Backend Software Engineer
     organization: Fasfox
     organization_url: https://fasfox.com/
     dates: Mar 2023 -- Sep 2024
@@ -73,7 +73,7 @@ sections:
       validation (Django/DRF).
     - Built and maintained a daemon that listens to email inboxes and parses attachments
       to create objects across databases (Django/DRF).
-  - role: Frontend Software Engineer
+  - title: Frontend Software Engineer
     organization: Fasfox
     organization_url: https://fasfox.com/
     dates: Oct 2021 -- Feb 2023
@@ -84,7 +84,7 @@ sections:
     - Developed an advanced slider for concrete volume tracking in the desktop web
       app (React.js/Next.js).
     - Built an efficient concrete calculator for the Concrete Dispatch blog site (Hugo/JavaScript).
-  - role: Software Engineering Intern
+  - title: Software Engineering Intern
     organization: National Civil Aviation Agency
     organization_url: https://anac.bj/
     dates: Aug 2019 -- Sep 2019
@@ -174,7 +174,7 @@ sections:
 - name: Education
   type: education
   entries:
-  - degree: Master in Artificial Intelligence
+  - title: Master in Artificial Intelligence
     organization: African Institute for Mathematical Sciences (AIMS)
     organization_url: https://aims.ac.za/
     dates: Sep 2024 -- Jul 2025
@@ -185,7 +185,7 @@ sections:
       and more.'
     - '**Thesis:** Advancing De Novo Glycopeptide Sequencing with [InstaNovo](https://github.com/instadeepai/InstaNovo)
       in Glycoproteomics.'
-  - degree: Master in Computer Science
+  - title: Master in Computer Science
     organization: Institute of Mathematics and Physical Sciences (IMSP)
     organization_url: https://www.imsp-benin.com/home/
     dates: Oct 2018 -- Jul 2020

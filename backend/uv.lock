@@ -56,13 +56,14 @@ wheels = [
 [[package]]
 name = "cvitae"
 version = "0.1.0"
-source = { directory = "../core-engine" }
+source = { editable = "../core-engine" }
 dependencies = [
     { name = "fastapi" },
     { name = "jinja2" },
     { name = "pydantic" },
+    { name = "pydantic-i18n" },
     { name = "python-multipart" },
-    { name = "pyyaml" },
+    { name = "ruamel-yaml" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
@@ -71,13 +72,11 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.139.0" },
     { name = "jinja2", specifier = ">=3.1.0" },
     { name = "pydantic", specifier = ">=2.0" },
+    { name = "pydantic-i18n", specifier = ">=0.4.0" },
     { name = "python-multipart", specifier = ">=0.0.32" },
-    { name = "pyyaml", specifier = ">=6.0" },
+    { name = "ruamel-yaml", specifier = ">=0.18.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.50.0" },
 ]
-
-[package.metadata.requires-dev]
-dev = [{ name = "types-pyyaml", specifier = ">=6.0.12.20260518" }]
 
 [[package]]
 name = "cvitae-saas-backend"
@@ -86,15 +85,23 @@ source = { virtual = "." }
 dependencies = [
     { name = "cvitae" },
     { name = "fastapi" },
+    { name = "peewee" },
+    { name = "pydantic-i18n" },
+    { name = "python-dotenv" },
     { name = "python-multipart" },
+    { name = "ulid-py" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "cvitae", directory = "../core-engine" },
+    { name = "cvitae", editable = "../core-engine" },
     { name = "fastapi" },
+    { name = "peewee", specifier = ">=4.3.0" },
+    { name = "pydantic-i18n" },
+    { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "python-multipart" },
+    { name = "ulid-py", specifier = ">=1.1.0" },
     { name = "uvicorn", extras = ["standard"] },
 ]
 
@@ -226,6 +233,15 @@ wheels = [
 ]
 
 [[package]]
+name = "peewee"
+version = "4.3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/94/d3/d506f871ca4173e1e3b0754459181f7dd4d7f12c32367865ab8cad3d16bf/peewee-4.3.0.tar.gz", hash = "sha256:f2e6686e6fc61d236fd12f370bfd42955b7b42bbd9954f207d02434a0328c3de", size = 795277, upload-time = "2026-07-31T16:51:22.784Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/33/fa/297ed34cba9ef22e29271a95b34d2b6191dba6de39e2d1918e3363cd6555/peewee-4.3.0-py3-none-any.whl", hash = "sha256:62a43d5934e7986747285124059c5ad8908cc70e538472aadae5cb5e9f10006c", size = 179479, upload-time = "2026-07-31T16:51:21.288Z" },
+]
+
+[[package]]
 name = "pydantic"
 version = "2.13.4"
 source = { registry = "https://pypi.org/simple" }
@@ -297,6 +313,18 @@ wheels = [
 ]
 
 [[package]]
+name = "pydantic-i18n"
+version = "0.4.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/58/70/c21ed1ce36a947c5a7fee04c5d3926db4907f00bc29b193759d675554329/pydantic_i18n-0.4.5.tar.gz", hash = "sha256:37c3b40df31713dba27c436d15a8d894d6022f3da5b78a40805e6b64edde34a3", size = 78725, upload-time = "2024-09-22T15:29:39.828Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7e/3b/4d2630503016cedef1751bc9ddea85b437fbfc9ca65d6af87285d76b7c2c/pydantic_i18n-0.4.5-py3-none-any.whl", hash = "sha256:592ae6b4fee13eb0193dc0c7bdc1e629d2ab1d732d5508368412a338b16cfece", size = 10436, upload-time = "2024-09-22T15:29:38.397Z" },
+]
+
+[[package]]
 name = "python-dotenv"
 version = "1.2.2"
 source = { registry = "https://pypi.org/simple" }
@@ -351,6 +379,15 @@ wheels = [
 ]
 
 [[package]]
+name = "ruamel-yaml"
+version = "0.19.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/c7/3b/ebda527b56beb90cb7652cb1c7e4f91f48649fbcd8d2eb2fb6e77cd3329b/ruamel_yaml-0.19.1.tar.gz", hash = "sha256:53eb66cd27849eff968ebf8f0bf61f46cdac2da1d1f3576dd4ccee9b25c31993", size = 142709, upload-time = "2026-01-02T16:50:31.84Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b8/0c/51f6841f1d84f404f92463fc2b1ba0da357ca1e3db6b7fbda26956c3b82a/ruamel_yaml-0.19.1-py3-none-any.whl", hash = "sha256:27592957fedf6e0b62f281e96effd28043345e0e66001f97683aa9a40c667c93", size = 118102, upload-time = "2026-01-02T16:50:29.201Z" },
+]
+
+[[package]]
 name = "starlette"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
@@ -381,6 +418,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/55/e3/70399cb7dd41c10ac53367ae42139cf4b1ca5f36bb3dc6c9d33acdb43655/typing_inspection-0.4.2.tar.gz", hash = "sha256:ba561c48a67c5958007083d386c3295464928b01faa735ab8547c5692e87f464", size = 75949, upload-time = "2025-10-01T02:14:41.687Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/dc/9b/47798a6c91d8bdb567fe2698fe81e0c6b7cb7ef4d13da4114b41d239f65d/typing_inspection-0.4.2-py3-none-any.whl", hash = "sha256:4ed1cacbdc298c220f1bd249ed5287caa16f34d44ef4e9c3d0cbad5b521545e7", size = 14611, upload-time = "2025-10-01T02:14:40.154Z" },
+]
+
+[[package]]
+name = "ulid-py"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/3b/53/d14a8ec344048e21431821cb49e9a6722384f982b889c2dd449428dbdcc1/ulid-py-1.1.0.tar.gz", hash = "sha256:dc6884be91558df077c3011b9fb0c87d1097cb8fc6534b11f310161afd5738f0", size = 22514, upload-time = "2020-09-15T15:35:09.414Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/42/7c/a12c879fe6c2b136a718c142115ff99397fbf62b4929d970d58ae386d55f/ulid_py-1.1.0-py2.py3-none-any.whl", hash = "sha256:b56a0f809ef90d6020b21b89a87a48edc7c03aea80e5ed5174172e82d76e3987", size = 25753, upload-time = "2020-09-15T15:35:08.075Z" },
 ]
 
 [[package]]
